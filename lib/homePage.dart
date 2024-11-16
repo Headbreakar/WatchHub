@@ -1,7 +1,7 @@
-import 'package:flutterofflie/login.dart';
-import 'package:flutterofflie/register.dart';
+import 'package:flutterofflie/SignUpScreen.dart';
+import 'package:flutterofflie/LoginScreen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/splash.dart';
+import 'package:flutterofflie/WatchEaseScreen.dart';
 
 class homePage extends StatefulWidget {
 const homePage({super.key});
@@ -55,7 +55,7 @@ title: Text("Home"),
 onTap: () {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (context) => login()),
+    MaterialPageRoute(builder: (context) => LoginScreen()),
   );
 },
 ),
@@ -65,7 +65,7 @@ title: Text("login"),
   onTap: () {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => login()),
+      MaterialPageRoute(builder: (context) => LoginScreen()),
     );
   },
 ),    ListTile(
@@ -74,7 +74,7 @@ title: Text("register"),
     onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => register()),
+        MaterialPageRoute(builder: (context) => SignUpScreen()),
       );
     },
 ),
@@ -84,7 +84,7 @@ title: Text("splash"),
     onTap: () {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => splash()),
+        MaterialPageRoute(builder: (context) => WatchEaseScreen()),
       );
     },
 ),
