@@ -61,6 +61,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     super.dispose();
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,9 +85,9 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ),
             ),
           ),
-          // Main content
+          // Main content with back button and title at the top
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -116,82 +117,75 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     ),
                   ),
                 ),
+                // Smaller Spacer to push the form upwards
+                Spacer(flex: 1),
                 // Centered form content
-                Expanded(
-                  child: Center(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          Center(
-                            child: Image.asset(
-                              "watchHub__1_-removebg-preview.png", // Replace with your logo
-                              width: 350,
-                              height: 70,
+                Center(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Center(
+                          child: Image.asset(
+                            "Profile_Image.png",
+                            width: 350,
+                            height: 250,
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        // Form fields
+                        buildTextField(
+                          hintText: 'Steve Watson',
+                          icon: Icons.person,
+                          focusNode: _nameFocusNode,
+                        ),
+                        SizedBox(height: 20),
+                        buildTextField(
+                          hintText: 'steve_watson@yourdomain.com',
+                          icon: Icons.email,
+                          focusNode: _emailFocusNode,
+                          showHint: _showEmailHint,
+                          controller: _emailController,
+                        ),
+                        SizedBox(height: 20),
+                        buildTextField(
+                          hintText: '+1 111 856 783 997',
+                          icon: Icons.phone,
+                          focusNode: _phoneFocusNode,
+                        ),
+                        SizedBox(height: 20),
+                        buildTextField(
+                          hintText: '20845 Oakridge Farm Lane (NYC)',
+                          icon: Icons.location_on,
+                          focusNode: _addressFocusNode,
+                        ),
+                        SizedBox(height: 20),
+                        buildTextField(
+                          hintText: '********',
+                          icon: Icons.lock,
+                          focusNode: _passwordFocusNode,
+                          showHint: _showPasswordHint,
+                          obscureText: !_isPasswordVisible,
+                          controller: _passwordController,
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                              color: Colors.white,
                             ),
+                            onPressed: () {
+                              setState(() {
+                                _isPasswordVisible = !_isPasswordVisible;
+                              });
+                            },
                           ),
-                          SizedBox(height: 40),
-
-                          // Name TextField
-                          buildTextField(
-                            hintText: 'Steve Watson',
-                            icon: Icons.person,
-                            focusNode: _nameFocusNode,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Email TextField with hint hiding on focus
-                          buildTextField(
-                            hintText: 'steve_watson@yourdomain.com',
-                            icon: Icons.email,
-                            focusNode: _emailFocusNode,
-                            showHint: _showEmailHint,
-                            controller: _emailController
-                          ),
-                          SizedBox(height: 20),
-
-                          // Phone Number TextField
-                          buildTextField(
-                            hintText: '+1 111 856 783 997',
-                            icon: Icons.phone,
-                            focusNode: _phoneFocusNode,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Address TextField
-                          buildTextField(
-                            hintText: '20845 Oakridge Farm Lane (NYC)',
-                            icon: Icons.location_on,
-                            focusNode: _addressFocusNode,
-                          ),
-                          SizedBox(height: 20),
-
-                          // Password TextField
-                          buildTextField(
-                            hintText: '********',
-                            icon: Icons.lock,
-                            focusNode: _passwordFocusNode,
-                            showHint: _showPasswordHint,
-                            obscureText: !_isPasswordVisible,
-                            controller: _passwordController,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                setState(() {
-                                  _isPasswordVisible = !_isPasswordVisible;
-                                });
-                              },
-                            ),
-                          ),
-                          SizedBox(height: 20),
-                        ],
-                      ),
+                        ),
+                        SizedBox(height: 20),
+                      ],
                     ),
                   ),
                 ),
+                // Smaller Spacer or no spacer here
+                Spacer(flex: 4),
               ],
             ),
           ),
