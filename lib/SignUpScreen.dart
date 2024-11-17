@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/LoginScreen.dart';
+import 'package:flutterofflie/createProfile.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -10,7 +11,8 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isPasswordVisible = false;
   bool _rememberMe = false;
-
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   // Focus nodes for each TextField
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
@@ -40,6 +42,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void dispose() {
     _emailFocusNode.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
   }
@@ -114,6 +118,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.85, // Adjusted width to 85% of screen width
                     child: TextField(
+                      controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
@@ -140,12 +145,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   child: Container(
                     width: MediaQuery.of(context).size.width * 0.85, // Adjusted width to 85% of screen width
                     child: TextField(
+                      controller: _passwordController,
                       obscureText: !_isPasswordVisible,
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Color(0xFF212121), // Solid background color
                         hintText: _showPasswordHint ? '********' : null, // Conditional hint text
+
                         hintStyle: TextStyle(color: Colors.white),
                         prefixIcon: Padding(
                           padding: EdgeInsets.only(left: 15, right: 10),
@@ -211,7 +218,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         padding: EdgeInsets.symmetric(vertical: 25),
                       ),
                       onPressed: () {
-                        // Define Sign Up action
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => CreateProfileScreen(
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          ),
+                        );
                       },
                       child: Text(
                         'Sign up',
