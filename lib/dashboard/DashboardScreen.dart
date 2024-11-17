@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutterofflie/dashboard/FeedbackScreen.dart';
+import 'package:flutterofflie/dashboard/LogoutScreen.dart';
+import 'package:flutterofflie/dashboard/OrdersScreen.dart';
 import 'package:flutterofflie/dashboard/ProductsScreen.dart';
+import 'package:flutterofflie/dashboard/UsersListScreen.dart';
 
 class DashboardScreen extends StatelessWidget {
   // Create a GlobalKey for the Scaffold state
@@ -20,7 +24,7 @@ class DashboardScreen extends StatelessWidget {
           },
         ),
         title: Text(
-          "Overview",
+          "WatchHub Dashboard",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -69,14 +73,20 @@ class DashboardScreen extends StatelessWidget {
               leading: Icon(Icons.history),
               title: Text("Orders"),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                );
               },
             ),
             ListTile(
               leading: Icon(Icons.person),
               title: Text("Users"),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UsersListScreen()),
+                );
               },
             ),
             Divider(),
@@ -84,14 +94,20 @@ class DashboardScreen extends StatelessWidget {
               leading: Icon(Icons.feedback),
               title: Text("Feedbacks"),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                );
               },
             ),
             ListTile(
               leading: Icon(Icons.logout),
               title: Text("Logout"),
               onTap: () {
-                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                );
               },
             ),
           ],
