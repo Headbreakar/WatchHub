@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutterofflie/Store/category.dart';
+import 'package:flutterofflie/Store/homepage.dart';
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -101,7 +102,10 @@ class HomePage extends StatelessWidget {
           Expanded(
             child: GestureDetector(
               onTap: () {
-
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoryPage()),
+                );
               },
               child: Container(
                 height: 50,
