@@ -8,6 +8,7 @@ import 'package:flutterofflie/LoginScreen.dart';
 import 'package:flutterofflie/Store/homepage.dart';
 import 'package:flutterofflie/Store/category.dart';
 import 'package:flutterofflie/Store/CartPage.dart';
+import 'package:flutterofflie/Store/Product.dart';
 
 void main() {
   runApp(WatchEaseApp());
@@ -17,7 +18,7 @@ class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SingleCategoryPage(categoryTitle: "categoryTitle"),
+      home: ProductPage(),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,
