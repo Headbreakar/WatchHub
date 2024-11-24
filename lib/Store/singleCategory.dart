@@ -42,7 +42,7 @@ class SingleCategoryPage extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () {
-                  Navigator.pop(context); // Navigate back to the previous screen
+                  Navigator.pop(context);
                 },
               ),
               Text(
@@ -64,9 +64,7 @@ class SingleCategoryPage extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                 ),
-                builder: (context) {
-                  return buildFilterModal(context);
-                },
+                builder: (context) => buildFilterModal(context),
               );
             },
           ),
@@ -85,8 +83,18 @@ class SingleCategoryPage extends StatelessWidget {
       "Over \$1000"
     ];
 
-    final List<String> materials = ["Stainless Steel", "Gold", "Titanium", "Ceramic"];
-    final List<String> brands = ["Rolex", "Patek Philippe", "Omega", "Audemars Piguet"];
+    final List<String> materials = [
+      "Stainless Steel",
+      "Gold",
+      "Titanium",
+      "Ceramic"
+    ];
+    final List<String> brands = [
+      "Rolex",
+      "Patek Philippe",
+      "Omega",
+      "Audemars Piguet"
+    ];
 
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter setState) {
@@ -102,64 +110,50 @@ class SingleCategoryPage extends StatelessWidget {
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
                   "Filter Options",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 22,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
                 SizedBox(height: 16),
 
-                // Settings Section
                 buildSectionTitle("Settings"),
                 buildSwitchTile("Show Only New Arrivals", isSetting1, (value) {
-                  setState(() {
-                    isSetting1 = value;
-                  });
+                  setState(() => isSetting1 = value);
                 }),
-                buildSwitchTile("Show Only Premium Watches", isSetting2, (value) {
-                  setState(() {
-                    isSetting2 = value;
-                  });
+                buildSwitchTile(
+                    "Show Only Premium Watches", isSetting2, (value) {
+                  setState(() => isSetting2 = value);
                 }),
-
                 SizedBox(height: 16),
 
-                // Price Range Section
                 buildSectionTitle("Price Range"),
-                buildFilterChips(priceRanges, selectedPriceRange, (selected, value) {
-                  setState(() {
-                    selectedPriceRange = selected ? value : selectedPriceRange;
-                  });
+                buildFilterChips(
+                    priceRanges, selectedPriceRange, (selected, value) {
+                  setState(() =>
+                  selectedPriceRange = selected ? value : selectedPriceRange);
                 }),
-
                 SizedBox(height: 16),
 
-                // Material Filter Section
                 buildSectionTitle("Material"),
-                buildFilterChips(materials, selectedMaterial, (selected, value) {
-                  setState(() {
-                    selectedMaterial = selected ? value : selectedMaterial;
-                  });
+                buildFilterChips(
+                    materials, selectedMaterial, (selected, value) {
+                  setState(() =>
+                  selectedMaterial = selected ? value : selectedMaterial);
                 }),
-
                 SizedBox(height: 16),
 
-                // Brand Filter Section
                 buildSectionTitle("Brand"),
                 buildFilterChips(brands, selectedBrand, (selected, value) {
-                  setState(() {
-                    selectedBrand = selected ? value : selectedBrand;
-                  });
+                  setState(() =>
+                  selectedBrand = selected ? value : selectedBrand);
                 }),
-
                 SizedBox(height: 16),
 
-                // Hashtags Section
                 buildSectionTitle("Hashtags"),
                 buildFilterChips(hashtags, selectedHashtags, (selected, value) {
                   setState(() {
@@ -168,21 +162,19 @@ class SingleCategoryPage extends StatelessWidget {
                 }),
 
                 SizedBox(height: 24),
-
-                // Apply Filters Button
                 Center(
                   child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
+                    onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF91AAC0),
-                      padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
                     ),
-                    child: Text("Apply Filters", style: TextStyle(fontSize: 16)),
+                    child: Text(
+                        "Apply Filters", style: TextStyle(fontSize: 16)),
                   ),
                 ),
               ],
@@ -193,20 +185,17 @@ class SingleCategoryPage extends StatelessWidget {
     );
   }
 
-
-  // Reusable function for section titles
   Widget buildSectionTitle(String title) {
     return Text(
       title,
       style: TextStyle(
         color: Colors.white,
         fontSize: 18,
-        fontWeight: FontWeight.w500,
+        fontWeight: FontWeight.bold,
       ),
     );
   }
 
-  // Reusable function for switch list tiles
   Widget buildSwitchTile(String title, bool value, Function(bool) onChanged) {
     return SwitchListTile(
       value: value,
@@ -216,8 +205,8 @@ class SingleCategoryPage extends StatelessWidget {
     );
   }
 
-  // Reusable function for filter chips (price ranges, materials, brands, hashtags)
-  Widget buildFilterChips(List<String> options, dynamic selectedOption, Function(bool, String) onSelected) {
+  Widget buildFilterChips(List<String> options, dynamic selectedOption,
+      Function(bool, String) onSelected) {
     return Wrap(
       spacing: 12.0,
       runSpacing: 8.0,
@@ -225,7 +214,6 @@ class SingleCategoryPage extends StatelessWidget {
         final isSelected = (selectedOption is List<bool>)
             ? selectedOption[index]
             : selectedOption == options[index];
-
         return FilterChip(
           label: Text(
             options[index],
@@ -245,35 +233,23 @@ class SingleCategoryPage extends StatelessWidget {
     );
   }
 
-
-
   Widget buildFilters() {
     final filters = ["new arrivals", "men"];
-
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
-      child: Row(
+      child: Wrap(
+        spacing: 8.0,
         children: filters.map((filter) {
-          return Container(
-            margin: EdgeInsets.only(right: 8.0),
-            padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
-            decoration: BoxDecoration(
-              color: Color(0xFF333333),
-              borderRadius: BorderRadius.circular(20),
+          return Chip(
+            label: Text(
+              filter,
+              style: TextStyle(color: Colors.white, fontSize: 14),
             ),
-            child: Row(
-              children: [
-                Text(
-                  filter,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                  ),
-                ),
-                SizedBox(width: 4.0),
-                Icon(Icons.close, color: Colors.grey, size: 16),
-              ],
-            ),
+            backgroundColor: Color(0xFF333333),
+            deleteIcon: Icon(Icons.close, size: 16, color: Colors.grey),
+            onDeleted: () {
+              // Handle filter removal
+            },
           );
         }).toList(),
       ),
@@ -281,21 +257,20 @@ class SingleCategoryPage extends StatelessWidget {
   }
 
   Widget buildProductGrid() {
-    // Mock product data
     final products = [
-      {"title": "LOUIS MOINET MOON 316L", "price": "\$17,200", "image": "assets/watch1.png"},
-      {"title": "ONLY INDIA 18K GOLD", "price": "\$286,248", "image": "assets/watch2.png"},
-      {"title": "MAEN Hudson 38 MK4", "price": "\$495", "image": "assets/watch3.png"},
-      {"title": "Baume Mercier Riviera", "price": "\$4,028", "image": "assets/watch4.png"},
+      {"title": "LOUIS MOINET MOON 316L", "price": "\$17,200", "image": "watchOne.png"},
+      {"title": "ONLY INDIA 18K GOLD", "price": "\$286,248", "image": "watchTwo.png"},
+      {"title": "MAEN Hudson 38 MK4", "price": "\$495", "image": "watchThree.png"},
+      {"title": "Baume Mercier Riviera", "price": "\$4,028", "image": "watchFour.png"},
     ];
 
     return Expanded(
       child: GridView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 15.0),
         itemCount: products.length,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
-          childAspectRatio: 0.7,
+          childAspectRatio: 0.55, // Adjusted for taller cards
           crossAxisSpacing: 16,
           mainAxisSpacing: 16,
         ),
@@ -307,6 +282,8 @@ class SingleCategoryPage extends StatelessWidget {
     );
   }
 
+
+
   Widget buildProductCard(String title, String price, String imagePath) {
     return Container(
       decoration: BoxDecoration(
@@ -314,41 +291,58 @@ class SingleCategoryPage extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch content to fill card width
         children: [
+          // Image section that covers most of the card
           Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(imagePath, fit: BoxFit.contain),
+            flex: 9, // Image takes 90% of the card height
+            child: Container(
+              child: ClipRRect(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                child: Image.asset(
+                  imagePath,
+                  fit: BoxFit.cover, // Ensures the image fills the container
+                  width: double.infinity,
+                ),
+              ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+          // Text section with minimal space
+          Expanded(
+            flex: 1, // Text takes 10% of the card height
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Centers text vertically
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis, // Handles long titles gracefully
                   ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 4),
-                Text(
-                  price,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                  SizedBox(height: 4),
+                  Text(
+                    price,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+
 }

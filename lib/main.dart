@@ -17,7 +17,7 @@ class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CartPage(),
+      home: SingleCategoryPage(categoryTitle: "categoryTitle"),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,
