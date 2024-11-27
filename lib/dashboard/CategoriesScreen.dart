@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/dashboard/UserDetailScreen.dart';
+import 'package:flutterofflie/dashboard/AddCategory.dart';
+import 'package:flutterofflie/dashboard/EditCategory.dart';
+import 'package:flutterofflie/dashboard/FeedbackScreen.dart';
+import 'package:flutterofflie/dashboard/OrdersScreen.dart';
+import 'package:flutterofflie/dashboard/UsersListScreen.dart';
 
-import 'CategoriesScreen.dart';
 import 'DashboardScreen.dart';
-import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
-import 'OrdersScreen.dart';
 import 'ProductsScreen.dart';
 
-class UsersListScreen extends StatelessWidget {
-  // Sample users list
-  final List<Map<String, String>> users = [
-    {'name': 'John Doe', 'email': 'johndoe@example.com'},
-    {'name': 'Jane Smith', 'email': 'janesmith@example.com'},
-    {'name': 'Michael Brown', 'email': 'michaelbrown@example.com'},
-    // Add more users if needed for testing
+class CategoriesScreen extends StatelessWidget {
+  // List of sample categories
+  final List<String> categories = [
+    "Category 1",
+    "Category 2",
+    "Category 3",
+    "Category 4",
+    "Category 5",
   ];
 
   @override
@@ -32,7 +34,7 @@ class UsersListScreen extends StatelessWidget {
           ),
         ),
         title: Text(
-          "Users",
+          "Categories",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -133,61 +135,72 @@ class UsersListScreen extends StatelessWidget {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            return Card(
-              margin: EdgeInsets.symmetric(vertical: 8),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          user['name'] ?? 'No Name',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        SizedBox(height: 4),
-                        Text(
-                          user['email'] ?? 'No Email',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        // View Button
-                        IconButton(
-                          icon: Icon(Icons.visibility, color: Colors.blue),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => UserDetailScreen(user: user),
-                              ),
-                            );
-                          },
-                        ),
-                        SizedBox(width: 8),
-                        // Delete Button
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () {
-                            // Delete the user
-                            print("Delete ${user['name']}");
-                          },
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+        child: Column(
+          children: [
+            // Add Category Button
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddCategoryScreen()),
+                );
+              },
+              child: Text("Add Category", style: TextStyle(color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                textStyle: TextStyle(fontSize: 16),
               ),
-            );
-          },
+            ),
+            SizedBox(height: 20),
+
+            // Categories List
+            Expanded(
+              child: ListView.builder(
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 8),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(16),
+                      title: Text(
+                        category,
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          // Edit Button
+                          IconButton(
+                            icon: Icon(Icons.edit, color: Colors.blue),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => EditCategoryScreen(initialCategoryName: 'Category1')),
+                              );
+                            },
+                          ),
+                          // Delete Button
+                          IconButton(
+                            icon: Icon(Icons.delete, color: Colors.red),
+                            onPressed: () {
+                              // Implement delete functionality here
+                              print("Delete button pressed for $category");
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
         ),
       ),
     );

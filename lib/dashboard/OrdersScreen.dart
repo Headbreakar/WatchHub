@@ -4,6 +4,7 @@ import 'package:flutterofflie/dashboard/EditOrderScreen.dart';
 import 'package:flutterofflie/dashboard/OrderDetailsScreen.dart';
 import 'package:flutterofflie/dashboard/ProductsScreen.dart';
 
+import 'CategoriesScreen.dart';
 import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
 import 'UsersListScreen.dart';
@@ -80,6 +81,16 @@ class _OrdersScreenState extends State<OrdersScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProductsScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.category),
+              title: Text("Categories"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
                 );
               },
             ),
