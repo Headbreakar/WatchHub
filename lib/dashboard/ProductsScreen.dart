@@ -3,6 +3,7 @@ import 'package:flutterofflie/dashboard/AddProductScreen.dart';
 import 'package:flutterofflie/dashboard/DashboardScreen.dart';
 import 'package:flutterofflie/dashboard/EditProductScreen.dart';
 
+import 'CategoriesScreen.dart';
 import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
 import 'OrdersScreen.dart';
@@ -75,6 +76,16 @@ class ProductsScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProductsScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.category),
+              title: Text("Categories"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
                 );
               },
             ),

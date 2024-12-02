@@ -15,8 +15,8 @@ class CartPage extends StatelessWidget {
           onPressed: () {},
         ),
         title: const Text(
-          'Close',
-          style: TextStyle(color: Colors.white, fontSize: 18),
+          'Cart',
+          style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
       body: Column(
@@ -216,7 +216,7 @@ class CartPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF007AFF), // iPhone-style blue
+          backgroundColor: const Color(0xFFA9C5D9), // iPhone-style blue
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "772500291062",
+    "firebase_url": "https://watchhub-94505-default-rtdb.firebaseio.com",
+    "project_id": "watchhub-94505",
+    "storage_bucket": "watchhub-94505.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772500291062:android:d2d2e0b74ccc9b7b8f9bd7",
+        "android_client_info": {
+          "package_name": "com.example.appwatch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVFF4Mp1G_pzr-WYXelqysHo4NAlKntgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772500291062:android:ce4d3d6c778640818f9bd7",
+        "android_client_info": {
+          "package_name": "com.example.flutterofflie"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVFF4Mp1G_pzr-WYXelqysHo4NAlKntgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:772500291062:android:a40d7d01729b321f8f9bd7",
+        "android_client_info": {
+          "package_name": "com.example.watchapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVFF4Mp1G_pzr-WYXelqysHo4NAlKntgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

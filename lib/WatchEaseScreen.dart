@@ -2,10 +2,19 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/SignUpScreen.dart';
 import 'package:flutterofflie/LoginScreen.dart';
+import 'package:flutterofflie/dashboard/CategoriesScreen.dart';
 
 class WatchEaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Navigate to the CategoriesScreen after 3 seconds
+    Future.delayed(Duration(seconds: 3), () {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => CategoriesScreen()),
+      );
+    });
+
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
@@ -61,7 +70,6 @@ class WatchEaseScreen extends StatelessWidget {
                                 color: Colors.white,
                                 fontSize: 22, // Slightly increased font size
                                 fontWeight: FontWeight.w600,
-
                               ),
                             ),
                             SizedBox(height: 8),
@@ -80,7 +88,6 @@ class WatchEaseScreen extends StatelessWidget {
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20), // Adjusted padding
-
                                   backgroundColor: Color(0xFF3A4F7A).withOpacity(0.5),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),

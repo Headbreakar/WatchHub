@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/dashboard/UserDetailScreen.dart';
 
+import 'CategoriesScreen.dart';
 import 'DashboardScreen.dart';
 import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
@@ -73,6 +74,16 @@ class UsersListScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ProductsScreen()),
+                );
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.category),
+              title: Text("Categories"),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
                 );
               },
             ),

@@ -1,24 +1,29 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/SignUpScreen.dart';
-import 'package:flutterofflie/Store/singleCategory.dart';
 import 'package:flutterofflie/WatchEaseScreen.dart';
-import 'package:flutterofflie/dashboard/DashboardScreen.dart';
-import 'package:flutterofflie/createProfile.dart';
-import 'package:flutterofflie/LoginScreen.dart';
-import 'package:flutterofflie/Store/homepage.dart';
-import 'package:flutterofflie/Store/category.dart';
-import 'package:flutterofflie/Store/CartPage.dart';
-import 'package:flutterofflie/Store/Product.dart';
+import 'package:flutterofflie/dashboard/CategoriesScreen.dart'; // Your CategoriesScreen
+import 'firebase_options.dart'; // Import the generated file
 
-void main() {
-  runApp(WatchEaseApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Ensures Flutter binding is initialized
+
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform, // Pass the options
+    );
+    print("Firebase Initialized Successfully");
+  } catch (e) {
+    print("Error initializing Firebase: $e"); // Log the error
+  }
+
+  runApp(WatchEaseApp()); // Run the app
 }
 
 class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: ProductPage(),
+      home: CategoriesScreen(),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,
@@ -27,5 +32,3 @@ class WatchEaseApp extends StatelessWidget {
     );
   }
 }
-
-
