@@ -1,14 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/Store/category.dart';
-import 'package:flutterofflie/Store/category.dart'; // Import your Trending page
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final DatabaseReference _productsRef =
+  FirebaseDatabase.instance.ref().child('products');
+
+  TextEditingController _searchController = TextEditingController();
+  String _searchQuery = "";
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: SingleChildScrollView( // Allow the entire page to scroll
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Column(
@@ -20,9 +38,43 @@ class HomePage extends StatelessWidget {
                 SizedBox(height: 16),
                 buildCategoryToggle(context),
                 SizedBox(height: 20),
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.7, // Grid takes up 70% of the screen height
-                  child: buildWatchGrid(), // GridView scrolls independently
+                FutureBuilder(
+                  future: _productsRef.get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text(
+                          'Error fetching data',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+
+                    if (!snapshot.hasData ||
+                        (snapshot.data as DataSnapshot).value == null) {
+                      return Center(
+                        child: Text(
+                          'No products found',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      );
+                    }
+
+                    Map products = (snapshot.data as DataSnapshot).value as Map;
+                    List items = products.entries
+                        .where((product) =>
+                        product.value['name']
+                            .toString()
+                            .toLowerCase()
+                            .contains(_searchQuery.toLowerCase()))
+                        .toList();
+
+                    return buildWatchGrid(items);
+                  },
                 ),
               ],
             ),
@@ -50,7 +102,6 @@ class HomePage extends StatelessWidget {
               IconButton(
                 icon: Icon(Icons.favorite_border, color: Colors.white),
                 onPressed: () {},
-                tooltip: 'Favorite', // Accessibility label
               ),
               SizedBox(width: 8),
               CircleAvatar(
@@ -66,6 +117,12 @@ class HomePage extends StatelessWidget {
 
   Widget buildSearchBar() {
     return TextField(
+      controller: _searchController,
+      onChanged: (value) {
+        setState(() {
+          _searchQuery = value;
+        });
+      },
       decoration: InputDecoration(
         hintText: "Search Product",
         hintStyle: TextStyle(color: Colors.grey),
@@ -145,90 +202,96 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildWatchGrid() {
+  Widget buildWatchGrid(List items) {
     return GridView.builder(
-      physics: BouncingScrollPhysics(), // Smooth scrolling inside the grid
-      itemCount: 4, // Replace with actual item count
+      shrinkWrap: true,
+      physics: NeverScrollableScrollPhysics(),
+      itemCount: items.length,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        childAspectRatio: 0.55, // Slightly adjusted for better proportions
+        childAspectRatio: 0.7,
         crossAxisSpacing: 16,
         mainAxisSpacing: 16,
       ),
       itemBuilder: (context, index) {
+        var product = items[index].value;
         return buildWatchCard(
-          "watchOne.png",
-          "LOUIS MOINET MOON 316L",
-          "\$17,200",
+          product['imageUrl'],
+          product['name'],
+          "${product['price']} USD",
+          product['shortDescription'],
         );
       },
     );
   }
 
-  Widget buildWatchCard(String imagePath, String name, String price) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        double cardHeight = constraints.maxHeight; // Get available card height
-        double imageHeight = cardHeight * 0.85; // Set image height to 85% of the card
-        imageHeight = imageHeight.clamp(0, cardHeight - 50); // Avoid overflow by capping
-
-        return Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF1A1A1A),
-            borderRadius: BorderRadius.circular(20),
+  Widget buildWatchCard(
+      String imagePath, String name, String price, String shortDescription) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFF1A1A1A),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+            child: Image.network(
+              imagePath,
+              height: 220,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey[800],
+                  child: Center(
+                    child: Icon(Icons.error, color: Colors.red),
+                  ),
+                );
+              },
+            ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Image section dynamically sized
-              ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-                child: Container(
-                  height: imageHeight,
-                  width: double.infinity,
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Center(
-                        child: Icon(Icons.error, color: Colors.red), // Placeholder for errors
-                      );
-                    },
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                SizedBox(height: 6),
+                Text(
+                  price,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-              ),
-              // Text section
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center, // Center text vertically
-                  children: [
-                    Text(
-                      name,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    SizedBox(height: 4),
-                    Text(
-                      price,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                SizedBox(height: 6),
+                Text(
+                  shortDescription,
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }
