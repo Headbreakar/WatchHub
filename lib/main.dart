@@ -16,7 +16,7 @@ void main() async {
     print("Error initializing Firebase: $e"); // Log the error
   }
 
-  runApp(WatchEaseApp()); // Run the app
+  runApp(WatchEaseApp());
 }
 
 class WatchEaseApp extends StatelessWidget {

@@ -1,23 +1,82 @@
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/dashboard/AddProductScreen.dart';
-import 'package:flutterofflie/dashboard/DashboardScreen.dart';
 import 'package:flutterofflie/dashboard/EditProductScreen.dart';
+import 'package:firebase_database/firebase_database.dart'; // Import Firebase
+import 'dart:async';
 
 import 'CategoriesScreen.dart';
+import 'DashboardScreen.dart';
 import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
 import 'OrdersScreen.dart';
-import 'UsersListScreen.dart';
+import 'UsersListScreen.dart'; // For Future handling
 
-class ProductsScreen extends StatelessWidget {
-  // List of sample products for the product list
-  final List<Map<String, String>> products = [
-    {"name": "Product 1", "description": "Description for Product 1", "image": "https://via.placeholder.com/50"},
-    {"name": "Product 2", "description": "Description for Product 2", "image": "https://via.placeholder.com/50"},
-    {"name": "Product 3", "description": "Description for Product 3", "image": "https://via.placeholder.com/50"},
-    {"name": "Product 4", "description": "Description for Product 4", "image": "https://via.placeholder.com/50"},
-    {"name": "Product 5", "description": "Description for Product 5", "image": "https://via.placeholder.com/50"},
-  ];
+class ProductsScreen extends StatefulWidget {
+  @override
+  _ProductsScreenState createState() => _ProductsScreenState();
+}
+
+class _ProductsScreenState extends State<ProductsScreen> {
+  final DatabaseReference _productsRef = FirebaseDatabase.instance.ref().child('products');
+
+  // List of products fetched from Firebase
+  List<Map<String, dynamic>> _products = [];
+  List<Map<String, dynamic>> _filteredProducts = [];
+  bool _isLoading = true;
+  String _searchQuery = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProducts(); // Fetch products when screen is loaded
+  }
+
+  // Function to fetch products from Firebase
+  Future<void> _fetchProducts() async {
+    try {
+      final DatabaseEvent event = await _productsRef.once();
+      final data = event.snapshot.value as Map?;
+
+      if (data != null) {
+        final List<Map<String, dynamic>> fetchedProducts = data.entries.map((entry) {
+          final productData = entry.value as Map;
+          return {
+            'productId': entry.key, // Add the productId here
+            'name': productData['name'].toString(),
+            'description': productData['shortDescription'].toString(),
+            'image': productData['imageUrl'].toString(),
+          };
+        }).toList();
+
+        setState(() {
+          _products = fetchedProducts;
+          _filteredProducts = fetchedProducts;
+          _isLoading = false;
+        });
+      }
+    } catch (error) {
+      print("Error fetching products: $error");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+  // Function to handle search query changes
+  void _onSearchChanged(String query) {
+    setState(() {
+      _searchQuery = query;
+      _filteredProducts = _products.where((product) {
+        final name = product['name']!.toLowerCase();
+        final description = product['description']!.toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        // Check if the query matches the product name or description
+        return name.contains(searchLower) || description.contains(searchLower);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -150,9 +209,7 @@ class ProductsScreen extends StatelessWidget {
                   hintText: "Search for a product",
                   border: InputBorder.none,
                 ),
-                onChanged: (value) {
-                  // Implement product search functionality here if needed
-                },
+                onChanged: _onSearchChanged, // Call onSearchChanged when text changes
               ),
             ),
             SizedBox(height: 20),
@@ -175,11 +232,13 @@ class ProductsScreen extends StatelessWidget {
             SizedBox(height: 20),
 
             // Products List
-            Expanded(
+            _isLoading
+                ? Center(child: CircularProgressIndicator()) // Show loading spinner
+                : Expanded(
               child: ListView.builder(
-                itemCount: products.length,
+                itemCount: _filteredProducts.length,
                 itemBuilder: (context, index) {
-                  final product = products[index];
+                  final product = _filteredProducts[index];
                   return Card(
                     margin: EdgeInsets.symmetric(vertical: 8),
                     elevation: 4,
@@ -204,9 +263,14 @@ class ProductsScreen extends StatelessWidget {
                           IconButton(
                             icon: Icon(Icons.edit, color: Colors.blue),
                             onPressed: () {
+                              // Pass the product's dynamic ID to the EditProductScreen
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => EditProductScreen(productId: "a")),
+                                MaterialPageRoute(
+                                  builder: (context) => EditProductScreen(
+                                    productId: product['productId']!, // Pass the correct productId
+                                  ),
+                                ),
                               );
                             },
                           ),

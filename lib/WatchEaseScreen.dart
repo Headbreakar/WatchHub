@@ -2,19 +2,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/SignUpScreen.dart';
 import 'package:flutterofflie/LoginScreen.dart';
-import 'package:flutterofflie/dashboard/CategoriesScreen.dart';
 
 class WatchEaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Navigate to the CategoriesScreen after 3 seconds
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => CategoriesScreen()),
-      );
-    });
-
     return Scaffold(
       backgroundColor: Colors.black,
       body: Stack(
