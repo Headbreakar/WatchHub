@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutterofflie/LoginScreen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
@@ -15,19 +16,18 @@ class CreateProfileScreen extends StatefulWidget {
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   bool _isPasswordVisible = false;
 
-
-  // Controllers for email and password to pre-fill fields
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
 
-  // Focus nodes for each TextField
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
   final FocusNode _nameFocusNode = FocusNode();
   final FocusNode _phoneFocusNode = FocusNode();
   final FocusNode _addressFocusNode = FocusNode();
 
-  // Flags to control hint visibility
   bool _showEmailHint = true;
   bool _showPasswordHint = true;
 
@@ -37,7 +37,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     _emailController.text = widget.email;
     _passwordController.text = widget.password;
 
-    // Set up listeners for focus changes
     _emailFocusNode.addListener(() {
       setState(() {
         _showEmailHint = !_emailFocusNode.hasFocus;
@@ -61,6 +60,35 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     super.dispose();
   }
 
+  Future<void> saveUserProfile() async {
+    try {
+      // Get a new document reference from Firestore for the user
+      DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc();
+
+      // Save user data to Firestore
+      await userRef.set({
+        'name': _nameController.text,
+        'email': _emailController.text,  // You can directly use the email provided by user
+        'phone': _phoneController.text,
+        'address': _addressController.text,
+        'createdAt': FieldValue.serverTimestamp(),
+        'isAdmin' : false,
+        'isVerified' : false,
+        'password' : _passwordController.text,
+      });
+
+      // After saving, navigate to the login screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => LoginScreen()), // Update with actual screen
+      );
+    } catch (e) {
+      print('Error saving user data: $e');  // Log the error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to save profile data: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +119,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Top back arrow and title
                 SafeArea(
                   child: Padding(
                     padding: EdgeInsets.only(top: 20.0, right: 30.0),
@@ -117,7 +144,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     ),
                   ),
                 ),
-                // Smaller Spacer to push the form upwards
                 Spacer(flex: 1),
                 // Centered form content
                 Center(
@@ -138,6 +164,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           hintText: 'Steve Watson',
                           icon: Icons.person,
                           focusNode: _nameFocusNode,
+                          controller: _nameController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
@@ -152,12 +179,14 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           hintText: '+1 111 856 783 997',
                           icon: Icons.phone,
                           focusNode: _phoneFocusNode,
+                          controller: _phoneController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
                           hintText: '20845 Oakridge Farm Lane (NYC)',
                           icon: Icons.location_on,
                           focusNode: _addressFocusNode,
+                          controller: _addressController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
@@ -184,7 +213,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                     ),
                   ),
                 ),
-                // Smaller Spacer or no spacer here
                 Spacer(flex: 4),
               ],
             ),
@@ -196,9 +224,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             right: 40,
             child: buildButton(
               text: 'Continue',
-              onPressed: () {
-                // Define Sign Up action
-              },
+              onPressed: saveUserProfile,
             ),
           ),
         ],
@@ -206,8 +232,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-
-
+  // Helper method to build the text fields
   Widget buildTextField({
     required String hintText,
     required IconData icon,
@@ -222,7 +247,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         width: MediaQuery.of(context).size.width * 0.85,
         child: StatefulBuilder(
           builder: (context, setState) {
-            // Listen for focus changes to hide/show hint text
             focusNode.addListener(() {
               setState(() {});
             });
@@ -234,7 +258,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               decoration: InputDecoration(
                 filled: true,
                 fillColor: Color(0xFF212121),
-                hintText: focusNode.hasFocus ? null : hintText, // Hide hint on focus
+                hintText: focusNode.hasFocus ? null : hintText,
                 hintStyle: TextStyle(
                   color: Colors.white.withOpacity(0.3),
                   fontWeight: FontWeight.w100,
@@ -262,6 +286,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
+  // Helper method to build the button
   Widget buildButton({required String text, required VoidCallback onPressed}) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
@@ -269,8 +294,8 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(30),
         ),
-        padding: EdgeInsets.symmetric(vertical: 25), // Adjust button's internal padding here
-        minimumSize: Size(double.infinity, 60), // Ensures full width
+        padding: EdgeInsets.symmetric(vertical: 25),
+        minimumSize: Size(double.infinity, 60),
       ),
       onPressed: onPressed,
       child: Text(
