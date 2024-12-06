@@ -1,9 +1,11 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/Store/homepage.dart';
-import 'package:flutterofflie/Store/singleCategory.dart';
-
+import 'singleCategory.dart';
 
 class CategoryPage extends StatelessWidget {
+  final DatabaseReference categoriesRef =
+  FirebaseDatabase.instance.ref().child('categories');
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -14,200 +16,212 @@ class CategoryPage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              buildAppBar(),
+              // App Bar
+              Padding(
+                padding: EdgeInsets.all(20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "CATEGORY",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.favorite_border, color: Colors.white),
+                          onPressed: () {},
+                        ),
+                        CircleAvatar(
+                          backgroundImage: AssetImage("Profile_Image.png"),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 16),
-              buildSearchBar(),
+              // Search Bar
+              TextField(
+                decoration: InputDecoration(
+                  hintText: "Search Product",
+                  hintStyle: TextStyle(color: Colors.grey),
+                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  filled: true,
+                  fillColor: Color(0xFF333333),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                    borderSide: BorderSide.none,
+                  ),
+                ),
+              ),
               SizedBox(height: 16),
-              buildCategoryToggle(context),
+              // Toggle Buttons
+              Container(
+                width: double.infinity,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF212121), // "Trending" unselected
+                            borderRadius: BorderRadius.all(Radius.circular(40)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Trending",
+                              style:
+                              TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 15), // Space between buttons
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          // "Category" is already selected, so no action needed
+                        },
+                        child: Container(
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Color(0xFF7EA1C1), // "Category" selected
+                            borderRadius: BorderRadius.all(Radius.circular(40)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              "Category",
+                              style:
+                              TextStyle(color: Colors.white, fontSize: 20),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               SizedBox(height: 16),
+              // Categories List
               Expanded(
-                child: buildCategoryList(context),
+                child: FutureBuilder(
+                  future: categoriesRef.get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(
+                          child: Text("Error fetching categories.",
+                              style: TextStyle(color: Colors.white)));
+                    } else if (snapshot.hasData) {
+                      Map<dynamic, dynamic>? data =
+                      snapshot.data!.value as Map<dynamic, dynamic>?;
+                      if (data == null || data.isEmpty) {
+                        return Center(
+                            child: Text("No categories found.",
+                                style: TextStyle(color: Colors.white)));
+                      }
+
+                      List categories = data.entries
+                          .map((entry) => {
+                        "id": entry.key, // Category ID
+                        "title": entry.value['name'] ?? "Unknown",
+                        "image": _getImage(entry.key), // Default image
+                      })
+                          .toList();
+
+                      return ListView.builder(
+                        itemCount: categories.length,
+                        itemBuilder: (context, index) {
+                          final category = categories[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SingleCategoryPage(
+                                    categoryTitle: category["title"],
+                                    categoryId: category["id"], // Pass ID
+                                  ),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                image: DecorationImage(
+                                  image: AssetImage(category["image"]),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              height: 150,
+                              alignment: Alignment.center,
+                              child: Text(
+                                category["title"],
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }
+                    return Center(
+                        child: Text("Unexpected error occurred.",
+                            style: TextStyle(color: Colors.white)));
+                  },
+                ),
               ),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomNavigationBarWidget(),
-    );
-  }
-
-  Widget buildCategoryToggle(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: false ? Color(0xFF7EA1C1) : Color(0xFF212121), // "Trending" unselected
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
-                ),
-                child: Center(
-                  child: Text(
-                    "Trending",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-              ),
-            ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: Colors.black,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: Colors.white),
+            label: 'HOME',
           ),
-          SizedBox(width: 15), // Space between buttons
-          Expanded(
-            child: GestureDetector(
-              onTap: () {
-                // "Category" is already selected, so no action needed
-              },
-              child: Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: true ? Color(0xFF7EA1C1) : Color(0xFF212121), // "Category" selected
-                  borderRadius: BorderRadius.all(Radius.circular(40)),
-                ),
-                child: Center(
-                  child: Text(
-                    "Category",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
-                ),
-              ),
-            ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.category, color: Colors.white),
+            label: 'CATEGORIES',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings, color: Colors.white),
+            label: 'SETTINGS',
           ),
         ],
+        selectedItemColor: Color(0xFF3A4F7A),
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
       ),
     );
   }
 
-  Widget buildAppBar() {
-    return Padding(
-      padding: EdgeInsets.all(20.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            "CATEGORY",
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.favorite_border, color: Colors.white),
-                onPressed: () {},
-              ),
-              CircleAvatar(
-                backgroundImage: AssetImage("Profile_Image.png"),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget buildSearchBar() {
-    return TextField(
-      decoration: InputDecoration(
-        hintText: "Search Product",
-        hintStyle: TextStyle(color: Colors.grey),
-        prefixIcon: Icon(Icons.search, color: Colors.grey),
-        filled: true,
-        fillColor: Color(0xFF333333),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(30.0),
-          borderSide: BorderSide.none,
-        ),
-      ),
-    );
-  }
-
-  Widget buildCategoryList(BuildContext context) {
-    final categories = [
-      {"title": "LOUIS MOINET WATCHES", "image": "cat.png"},
-      {"title": "TRENDING FOR MEN", "image": "catTwo.png"},
-      {"title": "TRENDING FOR WOMEN", "image": "women_watches1.png"},
-      {"title": "TRENDING FOR KIDS", "image": "bgWatch.png"},
+  String _getImage(String key) {
+    final defaultImages = [
+      "cat.png",
+      "catTwo.png",
+      "women_watches1.png",
+      "bgWatch.png"
     ];
-
-    return ListView.builder(
-      itemCount: categories.length,
-      itemBuilder: (context, index) {
-        final category = categories[index];
-        return GestureDetector(
-          onTap: () {
-            // Navigate to the Single Category Page with the selected category
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => SingleCategoryPage(
-                  categoryTitle: category["title"]!,
-                ),
-              ),
-            );
-          },
-          child: buildCategoryCard(category["title"]!, category["image"]!),
-        );
-      },
-    );
-  }
-
-  Widget buildCategoryCard(String title, String imagePath) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20),
-        image: DecorationImage(
-          image: AssetImage(imagePath),
-          fit: BoxFit.cover,
-        ),
-      ),
-      height: 150,
-      alignment: Alignment.center,
-      child: Text(
-        title,
-        style: TextStyle(
-          color: Colors.white,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-    );
-  }
-}
-
-class BottomNavigationBarWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Colors.black,
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home, color: Colors.white),
-          label: 'HOME',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category, color: Colors.white),
-          label: 'CATEGORIES',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings, color: Colors.white),
-          label: 'SETTINGS',
-        ),
-      ],
-      selectedItemColor: Color(0xFF3A4F7A),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-    );
+    int index = int.tryParse(key) ?? 0;
+    return defaultImages[index % defaultImages.length];
   }
 }
