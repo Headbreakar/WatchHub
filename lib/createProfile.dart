@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterofflie/LoginScreen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
@@ -62,28 +63,33 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
 
   Future<void> saveUserProfile() async {
     try {
-      // Get a new document reference from Firestore for the user
-      DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc();
+      // Firebase Authentication: Create a user
+      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
+      );
+
+      // Get the newly created user's UID
+      String userId = userCredential.user?.uid ?? '';
 
       // Save user data to Firestore
-      await userRef.set({
+      await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'name': _nameController.text,
-        'email': _emailController.text,  // You can directly use the email provided by user
+        'email': _emailController.text,
         'phone': _phoneController.text,
         'address': _addressController.text,
         'createdAt': FieldValue.serverTimestamp(),
-        'isAdmin' : false,
-        'isVerified' : false,
-        'password' : _passwordController.text,
+        'isAdmin': false,
+        'isVerified': false,
       });
 
-      // After saving, navigate to the login screen
+      // Navigate to the login screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()), // Update with actual screen
+        MaterialPageRoute(builder: (context) => LoginScreen()),
       );
     } catch (e) {
-      print('Error saving user data: $e');  // Log the error
+      print('Error saving user data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Failed to save profile data: $e')),
       );
@@ -99,7 +105,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("arm.png"), // Replace with your image path
+                image: AssetImage("arm.png"),
                 fit: BoxFit.cover,
               ),
             ),
@@ -159,7 +165,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           ),
                         ),
                         SizedBox(height: 20),
-                        // Form fields
                         buildTextField(
                           hintText: 'Steve Watson',
                           icon: Icons.person,
