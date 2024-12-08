@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/SignUpScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterofflie/Store/homepage.dart';
+
+
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -18,6 +21,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   bool _showEmailHint = true;
   bool _showPasswordHint = true;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -43,6 +47,74 @@ class _LoginScreenState extends State<LoginScreen> {
     _passwordController.dispose();
     _passwordFocusNode.dispose();
     super.dispose();
+  }
+
+  void _login() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showErrorDialog('Please enter both email and password.');
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+
+      // Redirect to HomeScreen on success
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      print('FirebaseAuthException: ${e.code}, ${e.message}'); // Add this
+      String errorMessage;
+      switch (e.code) {
+        case 'user-not-found':
+          errorMessage = 'No user found with this email.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Incorrect password.';
+          break;
+        case 'invalid-email':
+          errorMessage = 'The email address is not valid.';
+          break;
+        default:
+          errorMessage = 'Login failed. Please try again.';
+      }
+      _showErrorDialog(errorMessage);
+    } catch (e) {
+      print('Unexpected error: $e'); // Add this
+      _showErrorDialog('An unexpected error occurred. Please try again.');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Error'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            child: Text('OK'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -213,70 +285,16 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         padding: EdgeInsets.symmetric(vertical: 25),
                       ),
-                      onPressed: () {
-                        // Define Log In action
-                      },
-                      child: Text(
+                      onPressed: _isLoading ? null : _login,
+                      child: _isLoading
+                          ? CircularProgressIndicator(color: Colors.white)
+                          : Text(
                         'Log in',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
-                // "or continue with" text
-                Center(
-                  child: Text(
-                    'or continue with',
-                    style: TextStyle(color: Colors.grey[500]),
-                  ),
-                ),
-                SizedBox(height: 20),
-                // Social media icons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.facebook, color: Colors.blue, size: 40),
-                      onPressed: () {
-                        // Define Facebook login action
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.g_mobiledata, color: Colors.red, size: 40),
-                      onPressed: () {
-                        // Define Google login action
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.apple, color: Colors.white, size: 40),
-                      onPressed: () {
-                        // Define Apple login action
-                      },
-                    ),
-                  ],
-                ),
-                Spacer(),
-                // Sign Up link
-                Center(
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => SignUpScreen()),
-                      );
-                    },
-
-                    child: Text(
-                      'Don\'t have an account? Sign up',
-                      style: TextStyle(
-                        color: Colors.grey[500],
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
               ],
             ),
           ),
