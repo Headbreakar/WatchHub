@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -147,7 +148,9 @@ class _HomePageState extends State<HomePage> {
               // Redirect to TrendingPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CategoryPage()), // Replace with your actual TrendingPage widget
+                MaterialPageRoute(
+                    builder: (context) =>
+                        CategoryPage()), // Replace with your actual TrendingPage widget
               );
             },
             child: Container(
@@ -215,82 +218,101 @@ class _HomePageState extends State<HomePage> {
       ),
       itemBuilder: (context, index) {
         var product = items[index].value;
+        var productId = items[index].key; // Assuming 'key' holds the productId
         return buildWatchCard(
           product['imageUrl'],
           product['name'],
           "${product['price']} USD",
           product['shortDescription'],
+          productId, // Pass productId here
         );
       },
     );
   }
 
-  Widget buildWatchCard(
-      String imagePath, String name, String price, String shortDescription) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-            child: Image.network(
-              imagePath,
-              height: 220,
-              width: double.infinity,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  height: 180,
-                  color: Colors.grey[800],
-                  child: Center(
-                    child: Icon(Icons.error, color: Colors.red),
-                  ),
-                );
-              },
-            ),
+
+  Widget buildWatchCard(String imagePath,
+      String name,
+      String price,
+      String shortDescription,
+      String productId, // Add productId here
+      ) {
+    return GestureDetector(
+      onTap: () {
+        // Navigate to ProductPage with productId
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductPage(productId: productId),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  name,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                SizedBox(height: 6),
-                Text(
-                  price,
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(height: 6),
-                Text(
-                  shortDescription,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: 12,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+        );
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              child: Image.network(
+                imagePath,
+                height: 220,
+                width: double.infinity,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    height: 180,
+                    color: Colors.grey[800],
+                    child: Center(
+                      child: Icon(Icons.error, color: Colors.red),
+                    ),
+                  );
+                },
+              ),
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 12.0, vertical: 8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    price,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  SizedBox(height: 6),
+                  Text(
+                    shortDescription,
+                    style: TextStyle(
+                      color: Colors.grey,
+                      fontSize: 12,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

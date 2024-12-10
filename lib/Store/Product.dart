@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class ProductPage extends StatefulWidget {
+  final String productId; // Pass productId dynamically
+
+  ProductPage({required this.productId});
+
   @override
   _ProductPageState createState() => _ProductPageState();
 }
@@ -9,22 +14,62 @@ class ProductPage extends StatefulWidget {
 class _ProductPageState extends State<ProductPage> {
   String _selectedSize = '40 mm'; // Default selected size
   bool _isFavorited = false; // Default state for heart icon
+  Map<String, dynamic>? _productData; // Store product data
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProductDetails();
+  }
+
+  // Fetch product details from Firebase
+  Future<void> _fetchProductDetails() async {
+    try {
+      DatabaseReference productRef = FirebaseDatabase.instance
+          .ref()
+          .child('products')
+          .child(widget.productId);
+
+      final snapshot = await productRef.once();
+
+      if (snapshot.snapshot.value != null) {
+        // Convert snapshot.value to a Map<String, dynamic>
+        setState(() {
+          _productData = Map<String, dynamic>.from(
+              (snapshot.snapshot.value as Map<dynamic, dynamic>).map(
+                    (key, value) => MapEntry(key.toString(), value),
+              ));
+        });
+      } else {
+        print("Error: No data found for the given product ID.");
+      }
+    } catch (e) {
+      print("Error fetching product details: $e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
       body: SafeArea(
-        child: Column(
+        child: _productData == null
+            ? Center(
+          child: CircularProgressIndicator(
+            color: Colors.white,
+          ),
+        )
+            : Column(
           children: [
-            // Close button and watch image
+            // Close button and product image
             Expanded(
               child: Stack(
                 children: [
                   Center(
-                    child: Image.asset(
-                      'cart1.png', // Replace with your image URL or asset
+                    child: Image.network(
+                      _productData!['imageUrl'], // Dynamically loaded image
                       fit: BoxFit.fill,
+                      height: 500,
                     ),
                   ),
                   // Side pagination dots
@@ -50,7 +95,9 @@ class _ProductPageState extends State<ProductPage> {
                     left: 16,
                     top: 16,
                     child: IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       icon: Icon(Icons.close, color: Colors.white),
                     ),
                   ),
@@ -60,55 +107,56 @@ class _ProductPageState extends State<ProductPage> {
 
             // Rounded details section
             Container(
-              width: double.infinity, // Full width
-              height: 250, // Height as per your existing design
+              width: double.infinity,
+              height: 250,
               decoration: BoxDecoration(
-                color: Color(0xFF212121), // Background color
+                color: Color(0xFF212121),
                 borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20), // Subtle curve for top-left
-                  topRight: Radius.circular(140), // Fine-tuned curve for smoothness
+                  topLeft: Radius.circular(20),
+                  topRight: Radius.circular(140),
                 ),
               ),
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0), // Increased vertical padding
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 20.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Title
                     Text(
-                      'MOON 316L STAINLESS STEEL',
+                      _productData!['name'] ?? 'Product Name',
                       style: TextStyle(
                         color: Colors.white,
-                        fontSize: 22, // Slightly larger font for prominence
+                        fontSize: 22,
                         fontWeight: FontWeight.w100,
                       ),
                     ),
-                    SizedBox(height: 12), // More spacing between title and price
+                    SizedBox(height: 12),
                     // Price
                     Text(
-                      '\$17,200 / Price Incl. all Taxes',
+                      '\$${_productData!['price']} / Price Incl. all Taxes',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
-                        fontWeight: FontWeight.w600
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                    SizedBox(height: 24), // Space before size options
+                    SizedBox(height: 24),
                     // Size options
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.start, // Align size options to the left
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         _sizeOption('35 mm', _selectedSize == '35 mm'),
-                        SizedBox(width: 12), // Space between size options
+                        SizedBox(width: 12),
                         _sizeOption('40 mm', _selectedSize == '40 mm'),
                         SizedBox(width: 12),
                         _sizeOption('45 mm', _selectedSize == '45 mm'),
                       ],
                     ),
-                    SizedBox(height: 24), // Space before the button and icons
+                    SizedBox(height: 24),
                     // Add to Bag button and icons
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween, // Space between button and icons
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         // ADD TO BAG button
                         Container(
@@ -116,18 +164,19 @@ class _ProductPageState extends State<ProductPage> {
                           child: ElevatedButton(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Color(0xFFA9C5D9), // Light blue color from Figma
+                              backgroundColor: Color(0xFFA9C5D9),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              padding: const EdgeInsets.symmetric(vertical: 18), // Matches button height
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 18),
                             ),
                             child: Text(
                               'ADD TO BAG',
                               style: TextStyle(
-                                color: Colors.white, // White text color
+                                color: Colors.white,
                                 fontSize: 18,
-                                fontWeight: FontWeight.w100
+                                fontWeight: FontWeight.w100,
                               ),
                             ),
                           ),
@@ -139,42 +188,45 @@ class _ProductPageState extends State<ProductPage> {
                             IconButton(
                               onPressed: () {
                                 setState(() {
-                                  _isFavorited = !_isFavorited; // Toggle favorite state
+                                  _isFavorited = !_isFavorited;
                                 });
                               },
                               icon: AnimatedSwitcher(
-                                duration: const Duration(milliseconds: 300),
-                                transitionBuilder: (child, animation) {
+                                duration:
+                                const Duration(milliseconds: 300),
+                                transitionBuilder:
+                                    (child, animation) {
                                   return ScaleTransition(
                                     scale: animation,
                                     child: child,
                                   );
                                 },
                                 child: Icon(
-                                  _isFavorited ? IconlyBold.heart : IconlyLight.heart, // Thinner icons for filled and outlined heart
+                                  _isFavorited
+                                      ? IconlyBold.heart
+                                      : IconlyLight.heart,
                                   key: ValueKey<bool>(_isFavorited),
-                                  color: _isFavorited ? Colors.red : Colors.white, // Red when favorited
-                                  size: 35, // Maintained size
+                                  color: _isFavorited
+                                      ? Colors.red
+                                      : Colors.white,
+                                  size: 35,
                                 ),
                               ),
                             ),
-                            // Gap between icons
-                            SizedBox(width: 12), // Adds a slightly larger gap between the icons
+                            SizedBox(width: 12),
                             // Bag Icon
                             IconButton(
                               onPressed: () {},
                               icon: Icon(
-                                IconlyLight.bag, // Thinner bag icon
+                                IconlyLight.bag,
                                 color: Colors.white,
-                                size: 35, // Maintained size
+                                size: 35,
                               ),
                             ),
                           ],
                         ),
                       ],
                     ),
-
-
                   ],
                 ),
               ),
@@ -189,40 +241,39 @@ class _ProductPageState extends State<ProductPage> {
     return GestureDetector(
       onTap: () {
         setState(() {
-          _selectedSize = size; // Update selected size
+          _selectedSize = size;
         });
       },
       child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300), // Animation duration
+        duration: const Duration(milliseconds: 300),
         transitionBuilder: (Widget child, Animation<double> animation) {
-          // Combine Fade and Slide transitions
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
               position: Tween<Offset>(
-                begin: Offset(0, 0.1), // Start slightly below
-                end: Offset.zero, // End at the original position
+                begin: Offset(0, 0.1),
+                end: Offset.zero,
               ).animate(animation),
               child: child,
             ),
           );
         },
         child: Container(
-          key: ValueKey<bool>(isSelected), // Unique key for state switching
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10), // Compact size
+          key: ValueKey<bool>(isSelected),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? Color(0xFFA9C5D9) : Colors.black, // Background color transition
-            borderRadius: BorderRadius.circular(8), // Rounded edges
+            color: isSelected ? Color(0xFFA9C5D9) : Colors.black,
+            borderRadius: BorderRadius.circular(8),
           ),
           child: Center(
             child: Text(
               size,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.white70, // Animated text color
-                fontSize: 15, // Matches the Figma font size
-                fontWeight: FontWeight.w400, // Matches the Figma weight (400)
-                letterSpacing: -0.3, // -2% letter spacing (approx -0.3 in Flutter)
-                height: 1.0, // Matches line height of 15px in Figma
+                color: isSelected ? Colors.white : Colors.white70,
+                fontSize: 15,
+                fontWeight: FontWeight.w400,
+                letterSpacing: -0.3,
+                height: 1.0,
               ),
             ),
           ),
@@ -230,7 +281,4 @@ class _ProductPageState extends State<ProductPage> {
       ),
     );
   }
-
-
-
 }
