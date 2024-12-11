@@ -83,7 +83,18 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         'isVerified': false,
       });
 
-      // Navigate to the login screen
+      // Initialize an empty cart for the new user
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('cart')
+          .doc('initialCart') // This could be a placeholder document to signify an empty cart
+          .set({
+        'items': [],
+        'totalPrice': 0.0,
+      });
+
+      // Navigate to the login screen after profile is created
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -95,6 +106,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       );
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

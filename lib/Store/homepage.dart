@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutterofflie/Store/CartPage.dart';
 import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,6 +35,15 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildAppBar(),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => CartPage()),
+                    );
+                  },
+                  child: Text('Go to Cart'),
+                ),
                 SizedBox(height: 20),
                 buildSearchBar(),
                 SizedBox(height: 16),
@@ -78,10 +88,13 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ],
+              
             ),
           ),
         ),
+        
       ),
+      
       bottomNavigationBar: BottomNavigationBarWidget(),
     );
   }

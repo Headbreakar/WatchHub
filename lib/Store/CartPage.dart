@@ -1,7 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 
-class CartPage extends StatelessWidget {
+class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
+
+  @override
+  _CartPageState createState() => _CartPageState();
+}
+
+class _CartPageState extends State<CartPage> {
+  List<Map<String, dynamic>> _cartItems = []; // To store cart items
+  final DatabaseReference _productsRef = FirebaseDatabase.instance.ref().child('products'); // Firebase Realtime Database reference for products
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCartItems();
+  }
+
+  // Fetch Cart Items from Firestore and product details from Realtime Database
+  Future<void> _fetchCartItems() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
+
+      try {
+        // Fetch user's cart data from Firestore
+        final snapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('cart')
+            .doc('initialCart')
+            .get();
+
+        if (snapshot.exists) {
+          final items = snapshot.data()?['items'] as List<dynamic>?;
+          if (items != null && items.isNotEmpty) {
+            // Get the product IDs from the cart items
+            List<String> productIds = items.map((item) => item['id'] as String).toList();
+
+            // Fetch product details from Realtime Database for each product ID
+            List<Map<String, dynamic>> productDetails = [];
+            for (String productId in productIds) {
+              final productSnapshot = await _productsRef.child(productId).get();
+              if (productSnapshot.exists) {
+                productDetails.add(Map<String, dynamic>.from(productSnapshot.value as Map));
+              }
+            }
+
+            setState(() {
+              // Map the cart items with product details
+              _cartItems = items.map((item) {
+                String productId = item['id'];
+                Map<String, dynamic>? product = productDetails.firstWhere((prod) => prod['id'] == productId, orElse: () => {});
+                return {
+                  'product': product,
+                  'quantity': item['quantity'],
+                  'totalPrice': item['totalPrice'],
+                };
+              }).toList();
+            });
+          } else {
+            print("No items found in cart.");
+          }
+        } else {
+          print("No cart found for the user.");
+        }
+      } catch (e) {
+        print("Error fetching cart items: $e");
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,28 +93,20 @@ class CartPage extends StatelessWidget {
       body: Column(
         children: [
           Expanded(
-            child: ListView(
+            child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              children: [
-                _buildCartItem(
-                  image: 'cart1.png',
-                  name: 'MOON 316L STAINLESS STEEL',
-                  size: '40 mm',
-                  price: '17,200',
-                ),
-                _buildCartItem(
-                  image: 'cart1.png',
-                  name: 'Astronef Twin-Tourbillon',
-                  size: '45 mm',
-                  price: '378,921',
-                ),
-                _buildCartItem(
-                  image: 'cart1.png',
-                  name: 'Constellation Quartz 28 MM',
-                  size: '28 mm',
-                  price: '62,331',
-                ),
-              ],
+              itemCount: _cartItems.length,
+              itemBuilder: (context, index) {
+                final cartItem = _cartItems[index];
+                final product = cartItem['product'];
+                return _buildCartItem(
+                  image: product?['imageUrl'] ?? 'default_image_url', // Assuming you have imageUrl in product data
+                  name: product?['name'] ?? 'Unknown Product',
+                  size: 'N/A',  // You might need to adjust the size field in your DB
+                  price: product['price'].toString(),
+                  quantity: cartItem['quantity'],
+                );
+              },
             ),
           ),
           const Divider(color: Color(0xFF2C2C2E), height: 1),
@@ -61,27 +124,31 @@ class CartPage extends StatelessWidget {
     required String name,
     required String size,
     required String price,
+    required int quantity,
   }) {
+    final imageUrl = image.isNotEmpty && image != 'default_image_url'
+        ? image
+        : 'https://i.ibb.co/JyL4Kx7/image.png'; // Replace with valid fallback image
+
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1C1C1E), // Grayish background
+        color: const Color(0xFF1C1C1E),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Stack(
         children: [
-          // Image and Product Details
           Row(
             children: [
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  width: 80, // Set width to 80
-                  height: 112, // Set height to 112
+                  width: 80,
+                  height: 112,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     image: DecorationImage(
-                      image: AssetImage(image),
+                      image: NetworkImage(imageUrl),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -94,7 +161,7 @@ class CartPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 12.0), // Add left padding here
+                        padding: const EdgeInsets.only(left: 12.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -111,7 +178,7 @@ class CartPage extends StatelessWidget {
                               'SIZE: $size',
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF8E8E93), // Subtle gray
+                                color: Color(0xFF8E8E93),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -134,7 +201,7 @@ class CartPage extends StatelessWidget {
                             onPressed: () {},
                             iconSize: 18,
                           ),
-                          const Text('1', style: TextStyle(color: Colors.white)),
+                          Text('$quantity', style: TextStyle(color: Colors.white)),
                           IconButton(
                             icon: const Icon(Icons.add, color: Colors.white),
                             onPressed: () {},
@@ -148,7 +215,6 @@ class CartPage extends StatelessWidget {
               ),
             ],
           ),
-          // Positioned delete icon at top left corner
           Positioned(
             top: 8,
             right: 8,
@@ -162,6 +228,8 @@ class CartPage extends StatelessWidget {
       ),
     );
   }
+
+
 
   Widget _buildSummary() {
     return Padding(
@@ -216,7 +284,7 @@ class CartPage extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFFA9C5D9), // iPhone-style blue
+          backgroundColor: const Color(0xFFA9C5D9),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),

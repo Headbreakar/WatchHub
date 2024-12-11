@@ -1,6 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_iconly/flutter_iconly.dart';
 import 'package:firebase_database/firebase_database.dart';
+
+import '../Services/CartService.dart';
+
 
 class ProductPage extends StatefulWidget {
   final String productId; // Pass productId dynamically
@@ -15,6 +19,7 @@ class _ProductPageState extends State<ProductPage> {
   String _selectedSize = '40 mm'; // Default selected size
   bool _isFavorited = false; // Default state for heart icon
   Map<String, dynamic>? _productData; // Store product data
+  final CartService _cartService = CartService(); // CartService instance
 
   @override
   void initState() {
@@ -33,7 +38,6 @@ class _ProductPageState extends State<ProductPage> {
       final snapshot = await productRef.once();
 
       if (snapshot.snapshot.value != null) {
-        // Convert snapshot.value to a Map<String, dynamic>
         setState(() {
           _productData = Map<String, dynamic>.from(
               (snapshot.snapshot.value as Map<dynamic, dynamic>).map(
@@ -47,6 +51,41 @@ class _ProductPageState extends State<ProductPage> {
       print("Error fetching product details: $e");
     }
   }
+
+  void _addToCart() async {
+    if (_productData != null) {
+      // Ensure the user is authenticated
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        // Handle user not authenticated (e.g., show a login prompt)
+        print("User not authenticated");
+        return;
+      } else {
+        // User is authenticated
+        final String userId = user.uid;
+
+        // Ensure the price is a double
+        double price = 0.0;
+        if (_productData!['price'] is String) {
+          price = double.tryParse(_productData!['price']) ?? 0.0;
+        } else if (_productData!['price'] is double) {
+          price = _productData!['price'];
+        }
+
+        // Proceed with adding to cart
+        await _cartService.addItemToCart(
+          userId,
+          widget.productId,
+          _productData!['name'],
+          price,
+        );
+        print('Product added to cart');
+      }
+    }
+  }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +201,7 @@ class _ProductPageState extends State<ProductPage> {
                         Container(
                           width: MediaQuery.of(context).size.width * 0.45,
                           child: ElevatedButton(
-                            onPressed: () {},
+                            onPressed: _addToCart, // Add to Cart
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFA9C5D9),
                               shape: RoundedRectangleBorder(
@@ -194,8 +233,7 @@ class _ProductPageState extends State<ProductPage> {
                               icon: AnimatedSwitcher(
                                 duration:
                                 const Duration(milliseconds: 300),
-                                transitionBuilder:
-                                    (child, animation) {
+                                transitionBuilder: (child, animation) {
                                   return ScaleTransition(
                                     scale: animation,
                                     child: child,
@@ -216,7 +254,7 @@ class _ProductPageState extends State<ProductPage> {
                             SizedBox(width: 12),
                             // Bag Icon
                             IconButton(
-                              onPressed: () {},
+                              onPressed: () {}, // Implement Bag action
                               icon: Icon(
                                 IconlyLight.bag,
                                 color: Colors.white,
@@ -250,10 +288,8 @@ class _ProductPageState extends State<ProductPage> {
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(
-                begin: Offset(0, 0.1),
-                end: Offset.zero,
-              ).animate(animation),
+              position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset.zero)
+                  .animate(animation),
               child: child,
             ),
           );
