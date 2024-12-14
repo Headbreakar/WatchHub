@@ -4,6 +4,7 @@ import 'package:flutterofflie/LoginScreen.dart';
 import 'package:flutterofflie/SignUpScreen.dart';
 import 'package:flutterofflie/Store/CartPage.dart';
   import 'package:flutterofflie/Store/homepage.dart';
+import 'package:flutterofflie/Store/mainscreen.dart';
 import 'package:flutterofflie/WatchEaseScreen.dart';
 import 'package:flutterofflie/dashboard/CategoriesScreen.dart'; // Your CategoriesScreen
 import 'package:flutterofflie/dashboard/DashboardScreen.dart';
@@ -29,7 +30,7 @@ class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: CartPage(),
+      home: MainScreen(),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,

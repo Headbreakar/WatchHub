@@ -6,6 +6,10 @@ class CategoryPage extends StatelessWidget {
   final DatabaseReference categoriesRef =
   FirebaseDatabase.instance.ref().child('categories');
 
+  final VoidCallback onCartUpdate; // Callback to notify parent when cart is updated
+
+  CategoryPage({required this.onCartUpdate}); // Constructor to pass the callback
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,15 +151,11 @@ class CategoryPage extends StatelessWidget {
                           final category = categories[index];
                           return GestureDetector(
                             onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SingleCategoryPage(
-                                    categoryTitle: category["title"],
-                                    categoryId: category["id"], // Pass ID
-                                  ),
-                                ),
-                              );
+                              // Example: Add category to cart logic here
+                              print("Added to cart: ${category['title']}");
+
+                              // Notify the parent that the cart has been updated
+                              onCartUpdate();
                             },
                             child: Container(
                               margin: EdgeInsets.only(bottom: 16),
@@ -190,26 +190,6 @@ class CategoryPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: Colors.black,
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: Colors.white),
-            label: 'HOME',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.category, color: Colors.white),
-            label: 'CATEGORIES',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings, color: Colors.white),
-            label: 'SETTINGS',
-          ),
-        ],
-        selectedItemColor: Color(0xFF3A4F7A),
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
       ),
     );
   }

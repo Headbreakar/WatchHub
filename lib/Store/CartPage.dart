@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:flutterofflie/Store/mainscreen.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
@@ -12,12 +13,22 @@ class CartPage extends StatefulWidget {
 
 class _CartPageState extends State<CartPage> {
   List<Map<String, dynamic>> _cartItems = []; // To store cart items
-  final DatabaseReference _productsRef = FirebaseDatabase.instance.ref().child('products'); // Firebase Realtime Database reference for products
+  final DatabaseReference _productsRef =
+  FirebaseDatabase.instance.ref().child('products'); // Firebase Realtime Database reference for products
+  bool _isLoading = true; // Track loading state
 
   @override
   void initState() {
     super.initState();
     _fetchCartItems();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (ModalRoute.of(context)?.isCurrent == true) {
+      _fetchCartItems();
+    }
   }
 
   // Fetch Cart Items from Firestore and product details from Realtime Database
@@ -49,6 +60,7 @@ class _CartPageState extends State<CartPage> {
                 final productData = productSnapshot.value as Map<dynamic, dynamic>;
                 updatedCartItems.add({
                   'product': {
+                    'id': item['id'], // Ensure ID is included
                     'name': productData['name'] ?? item['name'],
                     'price': num.tryParse(productData['price'].toString()) ?? 0, // Parse price as num
                     'imageUrl': productData['imageUrl'] ?? 'https://i.ibb.co/JyL4Kx7/image.png',
@@ -62,6 +74,7 @@ class _CartPageState extends State<CartPage> {
                 // Fallback to cart data if product details are missing
                 updatedCartItems.add({
                   'product': {
+                    'id': item['id'],
                     'name': item['name'],
                     'price': num.tryParse(item['price'].toString()) ?? 0, // Parse price as num
                     'imageUrl': 'https://i.ibb.co/JyL4Kx7/image.png',
@@ -76,21 +89,67 @@ class _CartPageState extends State<CartPage> {
 
             setState(() {
               _cartItems = updatedCartItems;
+              _isLoading = false; // Stop loading
             });
           } else {
-            print("No items found in cart.");
+            setState(() {
+              _cartItems = []; // No items
+              _isLoading = false; // Stop loading
+            });
           }
         } else {
-          print("No cart found for the user.");
+          setState(() {
+            _cartItems = []; // No cart found
+            _isLoading = false; // Stop loading
+          });
         }
       } catch (e) {
         print("Error fetching cart items: $e");
+        setState(() {
+          _isLoading = false; // Stop loading on error
+        });
       }
     }
   }
 
+  Future<void> _updateCartInFirebaseWithList(List<Map<String, dynamic>> updatedCartItems) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userId = user.uid;
 
+      try {
+        final cartRef = FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('cart')
+            .doc('initialCart');
 
+        // Calculate the new totalPrice for the cart
+        final double totalPrice = updatedCartItems.fold(
+          0.0,
+              (sum, item) => sum + ((item['product']['price'] ?? 0) * (item['quantity'] ?? 0)),
+        );
+
+        // Prepare the updated items for Firestore
+        final firebaseItems = updatedCartItems.map((item) {
+          return {
+            'id': item['product']['id'],
+            'name': item['product']['name'],
+            'price': item['product']['price'],
+            'quantity': item['quantity'],
+          };
+        }).toList();
+
+        // Update the cart in Firestore with the new totalPrice
+        await cartRef.update({
+          'items': firebaseItems,
+          'totalPrice': totalPrice, // Update the total price in Firestore
+        });
+      } catch (e) {
+        print('Error updating cart: $e');
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -101,14 +160,30 @@ class _CartPageState extends State<CartPage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.close, color: Colors.white),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => MainScreen()),
+            );
+          },
         ),
         title: const Text(
           'Cart',
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
-      body: Column(
+      body: _isLoading
+          ? Center(
+        child: CircularProgressIndicator(color: Colors.white),
+      )
+          : _cartItems.isEmpty
+          ? Center(
+        child: Text(
+          "Your cart is empty!",
+          style: TextStyle(color: Colors.white, fontSize: 18),
+        ),
+      )
+          : Column(
         children: [
           Expanded(
             child: ListView.builder(
@@ -118,11 +193,12 @@ class _CartPageState extends State<CartPage> {
                 final cartItem = _cartItems[index];
                 final product = cartItem['product'];
                 return _buildCartItem(
-                  image: cartItem?['imageUrl'] ?? 'default_image_url', // Assuming you have imageUrl in product data
+                  image: product['imageUrl'] ?? 'default_image_url',
                   name: product['name'] ?? 'Unknown Product',
                   description: product['description'],
                   price: product['price'].toString(),
                   quantity: cartItem['quantity'],
+                  index: index,
                 );
               },
             ),
@@ -143,6 +219,7 @@ class _CartPageState extends State<CartPage> {
     String? description,
     required String price,
     required int quantity,
+    required int index,
   }) {
     final imageUrl = image.isNotEmpty && image != 'default_image_url'
         ? image
@@ -199,7 +276,6 @@ class _CartPageState extends State<CartPage> {
                                 color: Color(0xFF8E8E93),
                               ),
                             ),
-
                             const SizedBox(height: 8),
                             Text(
                               '\$$price',
@@ -217,13 +293,31 @@ class _CartPageState extends State<CartPage> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.remove, color: Colors.white),
-                            onPressed: () {},
+                            onPressed: quantity > 1
+                                ? () {
+                              setState(() {
+                                _cartItems[index]['quantity'] -= 1;
+                                _cartItems[index]['totalPrice'] =
+                                    _cartItems[index]['product']['price'] *
+                                        _cartItems[index]['quantity'];
+                              });
+                              _updateCartInFirebaseWithList(List.from(_cartItems));
+                            }
+                                : null,
                             iconSize: 18,
                           ),
-                          Text('$quantity', style: TextStyle(color: Colors.white)),
+                          Text('$quantity', style: const TextStyle(color: Colors.white)),
                           IconButton(
                             icon: const Icon(Icons.add, color: Colors.white),
-                            onPressed: () {},
+                            onPressed: () {
+                              setState(() {
+                                _cartItems[index]['quantity'] += 1;
+                                _cartItems[index]['totalPrice'] =
+                                    _cartItems[index]['product']['price'] *
+                                        _cartItems[index]['quantity'];
+                              });
+                              _updateCartInFirebaseWithList(List.from(_cartItems));
+                            },
                             iconSize: 18,
                           ),
                         ],
@@ -239,7 +333,14 @@ class _CartPageState extends State<CartPage> {
             right: 8,
             child: IconButton(
               icon: const Icon(Icons.delete, color: Colors.white),
-              onPressed: () {},
+              onPressed: () {
+                final updatedCartItems = List<Map<String, dynamic>>.from(_cartItems)
+                  ..removeAt(index);
+                _updateCartInFirebaseWithList(updatedCartItems);
+                setState(() {
+                  _cartItems.removeAt(index);
+                });
+              },
               iconSize: 20,
             ),
           ),
@@ -247,8 +348,6 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
-
 
   Widget _buildSummary() {
     // Calculate subtotal dynamically
@@ -276,8 +375,6 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
-
-
 
   Widget _buildSummaryRow(String label, String value,
       {bool isBold = false, double fontSize = 14}) {
@@ -315,7 +412,9 @@ class _CartPageState extends State<CartPage> {
           ),
           minimumSize: const Size(double.infinity, 48),
         ),
-        onPressed: () {},
+        onPressed: () {
+          // Handle checkout logic
+        },
         child: const Text(
           'CHECKOUT',
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),

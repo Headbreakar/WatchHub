@@ -2,7 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterofflie/Store/homepage.dart';
-
+import '../Store/mainscreen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -69,7 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Redirect to HomeScreen on success
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => MainScreen()),
       );
     } on FirebaseAuthException catch (e) {
       print('FirebaseAuthException: ${e.code}, ${e.message}'); // Add this

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutterofflie/Store/CartPage.dart';
 import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_database/firebase_database.dart';
 
 class HomePage extends StatefulWidget {
+  final VoidCallback onCartUpdate; // Callback to notify parent of cart changes
+
+  HomePage({required this.onCartUpdate}); // Constructor to accept the callback
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -35,15 +38,6 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildAppBar(),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => CartPage()),
-                    );
-                  },
-                  child: Text('Go to Cart'),
-                ),
                 SizedBox(height: 20),
                 buildSearchBar(),
                 SizedBox(height: 16),
@@ -88,14 +82,10 @@ class _HomePageState extends State<HomePage> {
                   },
                 ),
               ],
-              
             ),
           ),
         ),
-        
       ),
-      
-      bottomNavigationBar: BottomNavigationBarWidget(),
     );
   }
 
@@ -162,8 +152,10 @@ class _HomePageState extends State<HomePage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                    builder: (context) =>
-                        CategoryPage()), // Replace with your actual TrendingPage widget
+                  builder: (context) => CategoryPage(
+                    onCartUpdate: widget.onCartUpdate, // Pass the callback
+                  ),
+                ),
               );
             },
             child: Container(
@@ -192,7 +184,11 @@ class _HomePageState extends State<HomePage> {
               // Redirect to CategoryPage
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CategoryPage()),
+                MaterialPageRoute(
+                  builder: (context) => CategoryPage(
+                    onCartUpdate: widget.onCartUpdate, // Pass the callback
+                  ),
+                ),
               );
             },
             child: Container(
@@ -243,12 +239,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-
-  Widget buildWatchCard(String imagePath,
+  Widget buildWatchCard(
+      String imagePath,
       String name,
       String price,
       String shortDescription,
-      String productId, // Add productId here
+      String productId,
       ) {
     return GestureDetector(
       onTap: () {
@@ -287,8 +283,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(
-                  horizontal: 12.0, vertical: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -327,33 +322,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class BottomNavigationBarWidget extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      backgroundColor: Colors.black,
-      items: [
-        BottomNavigationBarItem(
-          icon: Icon(Icons.home, color: Colors.white),
-          label: 'Home',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.category, color: Colors.white),
-          label: 'Categories',
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.settings, color: Colors.white),
-          label: 'Settings',
-        ),
-      ],
-      selectedItemColor: Color(0xFF7EA1C1),
-      unselectedItemColor: Colors.grey,
-      showUnselectedLabels: true,
-      type: BottomNavigationBarType.fixed,
     );
   }
 }
