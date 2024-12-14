@@ -37,30 +37,45 @@ class _CartPageState extends State<CartPage> {
 
         if (snapshot.exists) {
           final items = snapshot.data()?['items'] as List<dynamic>?;
-          if (items != null && items.isNotEmpty) {
-            // Get the product IDs from the cart items
-            List<String> productIds = items.map((item) => item['id'] as String).toList();
 
-            // Fetch product details from Realtime Database for each product ID
-            List<Map<String, dynamic>> productDetails = [];
-            for (String productId in productIds) {
-              final productSnapshot = await _productsRef.child(productId).get();
+          if (items != null && items.isNotEmpty) {
+            List<Map<String, dynamic>> updatedCartItems = [];
+
+            for (var item in items) {
+              // Fetch additional product details from Realtime Database
+              final productSnapshot = await _productsRef.child(item['id']).get();
+
               if (productSnapshot.exists) {
-                productDetails.add(Map<String, dynamic>.from(productSnapshot.value as Map));
+                final productData = productSnapshot.value as Map<dynamic, dynamic>;
+                updatedCartItems.add({
+                  'product': {
+                    'name': productData['name'] ?? item['name'],
+                    'price': num.tryParse(productData['price'].toString()) ?? 0, // Parse price as num
+                    'imageUrl': productData['imageUrl'] ?? 'https://i.ibb.co/JyL4Kx7/image.png',
+                    'description': productData['longDescription'] ?? 'No description available',
+                  },
+                  'quantity': num.tryParse(item['quantity'].toString()) ?? 0, // Parse quantity as num
+                  'totalPrice': (num.tryParse(productData['price'].toString()) ?? 0) *
+                      (num.tryParse(item['quantity'].toString()) ?? 0), // Calculate totalPrice
+                });
+              } else {
+                // Fallback to cart data if product details are missing
+                updatedCartItems.add({
+                  'product': {
+                    'name': item['name'],
+                    'price': num.tryParse(item['price'].toString()) ?? 0, // Parse price as num
+                    'imageUrl': 'https://i.ibb.co/JyL4Kx7/image.png',
+                    'description': 'No description available',
+                  },
+                  'quantity': num.tryParse(item['quantity'].toString()) ?? 0, // Parse quantity as num
+                  'totalPrice': (num.tryParse(item['price'].toString()) ?? 0) *
+                      (num.tryParse(item['quantity'].toString()) ?? 0), // Calculate totalPrice
+                });
               }
             }
 
             setState(() {
-              // Map the cart items with product details
-              _cartItems = items.map((item) {
-                String productId = item['id'];
-                Map<String, dynamic>? product = productDetails.firstWhere((prod) => prod['id'] == productId, orElse: () => {});
-                return {
-                  'product': product,
-                  'quantity': item['quantity'],
-                  'totalPrice': item['totalPrice'],
-                };
-              }).toList();
+              _cartItems = updatedCartItems;
             });
           } else {
             print("No items found in cart.");
@@ -73,6 +88,9 @@ class _CartPageState extends State<CartPage> {
       }
     }
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -100,9 +118,9 @@ class _CartPageState extends State<CartPage> {
                 final cartItem = _cartItems[index];
                 final product = cartItem['product'];
                 return _buildCartItem(
-                  image: product?['imageUrl'] ?? 'default_image_url', // Assuming you have imageUrl in product data
-                  name: product?['name'] ?? 'Unknown Product',
-                  size: 'N/A',  // You might need to adjust the size field in your DB
+                  image: cartItem?['imageUrl'] ?? 'default_image_url', // Assuming you have imageUrl in product data
+                  name: product['name'] ?? 'Unknown Product',
+                  description: product['description'],
                   price: product['price'].toString(),
                   quantity: cartItem['quantity'],
                 );
@@ -122,7 +140,7 @@ class _CartPageState extends State<CartPage> {
   Widget _buildCartItem({
     required String image,
     required String name,
-    required String size,
+    String? description,
     required String price,
     required int quantity,
   }) {
@@ -175,12 +193,13 @@ class _CartPageState extends State<CartPage> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              'SIZE: $size',
+                              'Description: ${description ?? 'No description available'}',
                               style: const TextStyle(
                                 fontSize: 12,
                                 color: Color(0xFF8E8E93),
                               ),
                             ),
+
                             const SizedBox(height: 8),
                             Text(
                               '\$$price',
@@ -232,20 +251,24 @@ class _CartPageState extends State<CartPage> {
 
 
   Widget _buildSummary() {
+    // Calculate subtotal dynamically
+    final double subtotal = _cartItems.fold(
+      0.0,
+          (sum, item) => sum + (item['totalPrice'] ?? 0.0),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildSummaryRow('Subtotal', '\$458,452'),
-          const SizedBox(height: 8),
-          _buildSummaryRow('Estimated Shipping', '\$48.00'),
+          _buildSummaryRow('Subtotal', '\$${subtotal.toStringAsFixed(2)}'),
           const SizedBox(height: 8),
           const Divider(color: Color(0xFF2C2C2E)),
           const SizedBox(height: 8),
           _buildSummaryRow(
-            'Estimated Total',
-            '\$458,500',
+            'Total',
+            '\$${subtotal.toStringAsFixed(2)}',
             isBold: true,
             fontSize: 16,
           ),
@@ -253,6 +276,8 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
+
+
 
   Widget _buildSummaryRow(String label, String value,
       {bool isBold = false, double fontSize = 14}) {
