@@ -1,8 +1,14 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutterofflie/LoginScreen.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert'; // For JSON decoding
+import 'package:flutter/foundation.dart'; // For kIsWeb
+import 'LoginScreen.dart';
 
 class CreateProfileScreen extends StatefulWidget {
   final String email;
@@ -16,6 +22,10 @@ class CreateProfileScreen extends StatefulWidget {
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
   bool _isPasswordVisible = false;
+  File? _selectedImage; // For mobile/desktop
+  Uint8List? _webImage; // For Flutter Web
+  final ImagePicker _picker = ImagePicker(); // ImagePicker instance
+  final String imgbbApiKey = "d681de430ca3e38e4fd9b87a08a91f96"; // Replace with your ImgBB API key
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -23,48 +33,76 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
-  final FocusNode _emailFocusNode = FocusNode();
-  final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _nameFocusNode = FocusNode();
-  final FocusNode _phoneFocusNode = FocusNode();
-  final FocusNode _addressFocusNode = FocusNode();
-
-  bool _showEmailHint = true;
-  bool _showPasswordHint = true;
-
   @override
   void initState() {
     super.initState();
     _emailController.text = widget.email;
     _passwordController.text = widget.password;
-
-    _emailFocusNode.addListener(() {
-      setState(() {
-        _showEmailHint = !_emailFocusNode.hasFocus;
-      });
-    });
-
-    _passwordFocusNode.addListener(() {
-      setState(() {
-        _showPasswordHint = !_passwordFocusNode.hasFocus;
-      });
-    });
   }
 
-  @override
-  void dispose() {
-    _emailFocusNode.dispose();
-    _passwordFocusNode.dispose();
-    _nameFocusNode.dispose();
-    _phoneFocusNode.dispose();
-    _addressFocusNode.dispose();
-    super.dispose();
+  // Select an image using the ImagePicker
+  Future<void> _selectImage() async {
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      if (kIsWeb) {
+        // For Flutter Web
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _webImage = bytes;
+        });
+      } else {
+        // For Mobile/Desktop
+        setState(() {
+          _selectedImage = File(pickedFile.path);
+        });
+      }
+    }
+  }
+
+  // Upload the selected image to ImgBB
+  Future<String?> _uploadImageToImgBB() async {
+    try {
+      final request = http.MultipartRequest(
+        'POST',
+        Uri.parse("https://api.imgbb.com/1/upload?key=$imgbbApiKey"),
+      );
+
+      if (kIsWeb) {
+        // For web, send the image bytes
+        request.files.add(http.MultipartFile.fromBytes(
+          'image',
+          _webImage!,
+          filename: "profile.jpg",
+        ));
+      } else {
+        // For mobile/desktop, send the image file
+        request.files.add(await http.MultipartFile.fromPath(
+          'image',
+          _selectedImage!.path,
+        ));
+      }
+
+      final response = await request.send();
+      final responseBody = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        final jsonResponse = json.decode(responseBody.body);
+        return jsonResponse["data"]["url"];
+      } else {
+        print("Error uploading to ImgBB: ${responseBody.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Error during image upload: $e");
+      return null;
+    }
   }
 
   Future<void> saveUserProfile() async {
     try {
       // Firebase Authentication: Create a user
-      UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
         email: _emailController.text,
         password: _passwordController.text,
       );
@@ -72,51 +110,26 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       // Get the newly created user's UID
       String userId = userCredential.user?.uid ?? '';
 
+      // Upload the profile image
+      String? profileImageUrl = await _uploadImageToImgBB();
+
       // Save user data to Firestore
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'name': _nameController.text,
         'email': _emailController.text,
         'phone': _phoneController.text,
         'address': _addressController.text,
+        'profileImageUrl': profileImageUrl,
         'createdAt': FieldValue.serverTimestamp(),
         'isAdmin': false,
         'isVerified': false,
       });
 
-      // Initialize an empty cart for the new user
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('cart')
-          .doc('initialCart')
-          .set({
-        'items': [],
-        'totalPrice': 0.0,
-      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Profile created successfully!')),
+      );
 
-      // Initialize an empty wishlist for the new user
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('wishlist')
-          .doc('initialWishlist')
-          .set({
-        'items': [],
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      // Initialize an empty orders collection for the new user
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .collection('orders')
-          .doc('initialOrder') // Placeholder for future orders
-          .set({
-        'orders': [], // Empty orders list initially
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-
-      // Navigate to the login screen after profile is created
+      // Navigate to the login screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginScreen()),
@@ -129,14 +142,12 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     }
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background Image
+          // Background with blur effect
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -145,7 +156,6 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ),
             ),
           ),
-          // Blur effect with semi-transparent overlay
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -154,99 +164,85 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ),
             ),
           ),
-          // Main content with back button and title at the top
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 30.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 SafeArea(
-                  child: Padding(
-                    padding: EdgeInsets.only(top: 20.0, right: 30.0),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      Spacer(),
+                      Text(
+                        'Fill your Profile',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 30,
+                          fontWeight: FontWeight.w400,
                         ),
-                        Spacer(),
-                        Text(
-                          'Fill your Profile',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 30,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ),
-                        Spacer(),
-                      ],
-                    ),
+                      ),
+                      Spacer(),
+                    ],
                   ),
                 ),
                 Spacer(flex: 1),
-                // Centered form content
+                // Profile Picture
+                Center(
+                  child: GestureDetector(
+                    onTap: _selectImage,
+                    child: CircleAvatar(
+                      radius: 70,
+                      backgroundColor: Colors.grey.shade800,
+                      backgroundImage: kIsWeb
+                          ? (_webImage != null ? MemoryImage(_webImage!) as ImageProvider<Object> : null)
+                          : (_selectedImage != null ? FileImage(_selectedImage!) as ImageProvider<Object> : null),
+                      child: (_webImage == null && _selectedImage == null)
+                          ? Icon(Icons.camera_alt, size: 40, color: Colors.white)
+                          : null,
+                    ),
+                  ),
+                ),
+
+                SizedBox(height: 20),
+                // Form Fields
                 Center(
                   child: SingleChildScrollView(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Center(
-                          child: Image.asset(
-                            "Profile_Image.png",
-                            width: 350,
-                            height: 250,
-                          ),
-                        ),
-                        SizedBox(height: 20),
                         buildTextField(
                           hintText: 'Steve Watson',
                           icon: Icons.person,
-                          focusNode: _nameFocusNode,
                           controller: _nameController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
                           hintText: 'steve_watson@yourdomain.com',
                           icon: Icons.email,
-                          focusNode: _emailFocusNode,
-                          showHint: _showEmailHint,
                           controller: _emailController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
                           hintText: '+1 111 856 783 997',
                           icon: Icons.phone,
-                          focusNode: _phoneFocusNode,
                           controller: _phoneController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
                           hintText: '20845 Oakridge Farm Lane (NYC)',
                           icon: Icons.location_on,
-                          focusNode: _addressFocusNode,
                           controller: _addressController,
                         ),
                         SizedBox(height: 20),
                         buildTextField(
                           hintText: '********',
                           icon: Icons.lock,
-                          focusNode: _passwordFocusNode,
-                          showHint: _showPasswordHint,
-                          obscureText: !_isPasswordVisible,
                           controller: _passwordController,
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
-                          ),
+                          obscureText: true,
                         ),
                         SizedBox(height: 20),
                       ],
@@ -257,14 +253,27 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
               ],
             ),
           ),
-          // Sign Up button at the bottom with full width and padding
           Positioned(
             bottom: 30,
             left: 40,
             right: 40,
-            child: buildButton(
-              text: 'Continue',
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF7EA1C1),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                padding: EdgeInsets.symmetric(vertical: 25),
+                minimumSize: Size(double.infinity, 60),
+              ),
               onPressed: saveUserProfile,
+              child: Text(
+                'Continue',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.white,
+                ),
+              ),
             ),
           ),
         ],
@@ -272,86 +281,30 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
     );
   }
 
-  // Helper method to build the text fields
   Widget buildTextField({
     required String hintText,
     required IconData icon,
-    required FocusNode focusNode,
-    bool obscureText = false,
-    bool showHint = true,
     TextEditingController? controller,
-    Widget? suffixIcon,
+    bool obscureText = false,
   }) {
-    return Center(
-      child: Container(
-        width: MediaQuery.of(context).size.width * 0.85,
-        child: StatefulBuilder(
-          builder: (context, setState) {
-            focusNode.addListener(() {
-              setState(() {});
-            });
-
-            return TextField(
-              focusNode: focusNode,
-              controller: controller,
-              obscureText: obscureText,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Color(0xFF212121),
-                hintText: focusNode.hasFocus ? null : hintText,
-                hintStyle: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
-                  fontWeight: FontWeight.w100,
-                ),
-                prefixIcon: Padding(
-                  padding: EdgeInsets.only(left: 15, right: 10),
-                  child: Icon(
-                    icon,
-                    color: Colors.white,
-                    size: 24,
-                  ),
-                ),
-                suffixIcon: suffixIcon,
-                contentPadding: EdgeInsets.symmetric(vertical: 25),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(20),
-                  borderSide: BorderSide.none,
-                ),
-              ),
-              style: TextStyle(color: Colors.white),
-            );
-          },
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      decoration: InputDecoration(
+        filled: true,
+        fillColor: Color(0xFF212121),
+        hintText: hintText,
+        hintStyle: TextStyle(
+          color: Colors.white.withOpacity(0.3),
+        ),
+        prefixIcon: Icon(icon, color: Colors.white),
+        contentPadding: EdgeInsets.symmetric(vertical: 25),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(20),
+          borderSide: BorderSide.none,
         ),
       ),
-    );
-  }
-
-  // Helper method to build the button
-  Widget buildButton({required String text, required VoidCallback onPressed}) {
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFF7EA1C1),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(30),
-        ),
-        padding: EdgeInsets.symmetric(vertical: 25),
-        minimumSize: Size(double.infinity, 60),
-      ),
-      onPressed: onPressed,
-      child: Text(
-        text,
-        style: TextStyle(
-          fontSize: 18,
-          color: Colors.white,
-          shadows: [
-            Shadow(
-              color: Color(0x66000000),
-              offset: Offset(0, 1),
-              blurRadius: 4,
-            ),
-          ],
-        ),
-      ),
+      style: TextStyle(color: Colors.white),
     );
   }
 }
