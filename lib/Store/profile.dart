@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
+  const ProfilePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,26 +41,26 @@ class ProfilePage extends StatelessWidget {
   }
 
   Widget buildProfileHeader() {
-    return Center(
+    return const Center(
       child: Column(
         children: [
           CircleAvatar(
             radius: 50,
             backgroundImage: AssetImage("profile_image.png"), // Replace with your image
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 16),
           Text(
             "John Doe", // User's name
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.white,
               fontSize: 24,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: 8),
           Text(
             "johndoe@example.com", // User's email
-            style: const TextStyle(
+            style: TextStyle(
               color: Colors.grey,
               fontSize: 14,
             ),

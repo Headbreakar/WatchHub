@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data'; // For Flutter Web
+// For Flutter Web
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,7 +12,7 @@ import 'ProductsScreen.dart';
 class EditProductScreen extends StatefulWidget {
   final String productId;
 
-  EditProductScreen({required this.productId});
+  const EditProductScreen({super.key, required this.productId});
 
   @override
   _EditProductScreenState createState() => _EditProductScreenState();
@@ -65,7 +65,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         });
       }
     } catch (error) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error fetching product data")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Error fetching product data")));
     } finally {
       setState(() {
         _isFetchingData = false;
@@ -123,7 +123,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
         throw Exception("Failed to upload image");
       }
     } catch (error) {
-      throw error;
+      rethrow;
     }
   }
 
@@ -136,7 +136,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     String price = priceController.text.trim();
 
     if (name.isEmpty || shortDesc.isEmpty || longDesc.isEmpty || price.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("All fields are required")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("All fields are required")));
       return;
     }
 
@@ -159,11 +159,11 @@ class _EditProductScreenState extends State<EditProductScreen> {
         'imageUrl': imageUrl.isNotEmpty ? imageUrl : '', // Use existing image URL if no new image
       });
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Product updated successfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Product updated successfully!")));
       Navigator.pop(context); // Go back to the previous screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => ProductsScreen()), // Push ProductsScreen again
+        MaterialPageRoute(builder: (context) => const ProductsScreen()), // Push ProductsScreen again
       );
     } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to update product: $error")));
@@ -181,16 +181,16 @@ class _EditProductScreenState extends State<EditProductScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: BackButton(color: Colors.black),
-        title: Text(
+        leading: const BackButton(color: Colors.black),
+        title: const Text(
           "Edit Product",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: [
           if (_isLoading)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
+            const Padding(
+              padding: EdgeInsets.all(8.0),
               child: CircularProgressIndicator(),
             ),
         ],
@@ -198,49 +198,49 @@ class _EditProductScreenState extends State<EditProductScreen> {
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: _isFetchingData
-            ? Center(child: CircularProgressIndicator())
+            ? const Center(child: CircularProgressIndicator())
             : SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Product Name',
                   hintText: 'Enter product name',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: shortDescriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Short Description',
                   hintText: 'Enter short description',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: longDescriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Long Description',
                   hintText: 'Enter detailed description',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 4,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: priceController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Price',
                   hintText: 'Enter price',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   _imageFile == null && _webImage == null
@@ -250,23 +250,23 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     width: 100,
                     height: 100,
                     color: Colors.grey[300],
-                    child: Icon(Icons.image, size: 50),
+                    child: const Icon(Icons.image, size: 50),
                   )
                       : (_webImage != null
                       ? Image.memory(_webImage!, width: 100, height: 100, fit: BoxFit.cover)
                       : Image.file(_imageFile!, width: 100, height: 100, fit: BoxFit.cover)),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: Text("Pick Image"),
+                    child: const Text("Pick Image"),
                   ),
                 ],
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _updateProduct,
-                child: Text("Save Changes"),
+                child: const Text("Save Changes"),
               ),
             ],
           ),

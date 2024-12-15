@@ -12,6 +12,8 @@ import 'OrdersScreen.dart';
 import 'UsersListScreen.dart'; // For Future handling
 
 class ProductsScreen extends StatefulWidget {
+  const ProductsScreen({super.key});
+
   @override
   _ProductsScreenState createState() => _ProductsScreenState();
 }
@@ -86,18 +88,18 @@ class _ProductsScreenState extends State<ProductsScreen> {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
+            icon: const Icon(Icons.menu, color: Colors.black),
             onPressed: () {
               Scaffold.of(context).openDrawer(); // Open the drawer
             },
           ),
         ),
-        title: Text(
+        title: const Text(
           "Products",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
+        actions: const [
           CircleAvatar(
             backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
           ),
@@ -108,7 +110,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            UserAccountsDrawerHeader(
+            const UserAccountsDrawerHeader(
               accountName: Text("Anas Ashfaq"),
               accountEmail: Text("anas.ashfaq@example.com"),
               currentAccountPicture: CircleAvatar(
@@ -119,8 +121,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text("Dashboard"),
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -129,63 +131,63 @@ class _ProductsScreenState extends State<ProductsScreen> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.production_quantity_limits),
-              title: Text("Products"),
+              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text("Products"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductsScreen()),
+                  MaterialPageRoute(builder: (context) => const ProductsScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.category),
-              title: Text("Categories"),
+              leading: const Icon(Icons.category),
+              title: const Text("Categories"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                  MaterialPageRoute(builder: (context) => const CategoriesScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text("Orders"),
+              leading: const Icon(Icons.history),
+              title: const Text("Orders"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                  MaterialPageRoute(builder: (context) => const OrdersScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Users"),
+              leading: const Icon(Icons.person),
+              title: const Text("Users"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UsersListScreen()),
+                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.feedback),
-              title: Text("Feedbacks"),
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedbacks"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                  MaterialPageRoute(builder: (context) => const LogoutScreen()),
                 );
               },
             ),
@@ -202,9 +204,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 color: Colors.grey[200],
                 borderRadius: BorderRadius.circular(10),
               ),
-              padding: EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
               child: TextField(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   icon: Icon(Icons.search, color: Colors.grey),
                   hintText: "Search for a product",
                   border: InputBorder.none,
@@ -212,48 +214,48 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 onChanged: _onSearchChanged, // Call onSearchChanged when text changes
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Add Product Button
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => AddProductScreen()),
+                  MaterialPageRoute(builder: (context) => const AddProductScreen()),
                 );
               },
-              child: Text("Add Product", style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                textStyle: TextStyle(fontSize: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
               ),
+              child: const Text("Add Product", style: TextStyle(color: Colors.white)),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Products List
             _isLoading
-                ? Center(child: CircularProgressIndicator()) // Show loading spinner
+                ? const Center(child: CircularProgressIndicator()) // Show loading spinner
                 : Expanded(
               child: ListView.builder(
                 itemCount: _filteredProducts.length,
                 itemBuilder: (context, index) {
                   final product = _filteredProducts[index];
                   return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8),
+                    margin: const EdgeInsets.symmetric(vertical: 8),
                     elevation: 4,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(16),
+                      contentPadding: const EdgeInsets.all(16),
                       leading: CircleAvatar(
                         radius: 25,
                         backgroundImage: NetworkImage(product['image']!),
                       ),
                       title: Text(
                         product['name']!,
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                       ),
                       subtitle: Text(product['description']!),
                       trailing: Row(
@@ -261,7 +263,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                         children: [
                           // Edit Button
                           IconButton(
-                            icon: Icon(Icons.edit, color: Colors.blue),
+                            icon: const Icon(Icons.edit, color: Colors.blue),
                             onPressed: () {
                               // Pass the product's dynamic ID to the EditProductScreen
                               Navigator.push(
@@ -276,7 +278,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                           ),
                           // Delete Button
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () {
                               // Implement delete functionality here
                               print("Delete button pressed for ${product['name']}");

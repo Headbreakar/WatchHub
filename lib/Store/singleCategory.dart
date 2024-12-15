@@ -5,7 +5,7 @@ class SingleCategoryPage extends StatelessWidget {
   final String categoryId; // ID of the selected category
   final String categoryTitle;
 
-  SingleCategoryPage({required this.categoryId, required this.categoryTitle});
+  const SingleCategoryPage({super.key, required this.categoryId, required this.categoryTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +16,9 @@ class SingleCategoryPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             buildAppBar(context),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             buildFilters(),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Expanded(child: buildProductGrid()), // Fetch and display products
           ],
         ),
@@ -27,8 +27,8 @@ class SingleCategoryPage extends StatelessWidget {
         onPressed: () {
           // Add functionality for the cart button
         },
-        backgroundColor: Color(0xFF7EA1C1),
-        child: Icon(Icons.shopping_bag, color: Colors.white),
+        backgroundColor: const Color(0xFF7EA1C1),
+        child: const Icon(Icons.shopping_bag, color: Colors.white),
       ),
     );
   }
@@ -42,14 +42,14 @@ class SingleCategoryPage extends StatelessWidget {
       Row(
       children: [
       IconButton(
-      icon: Icon(Icons.arrow_back, color: Colors.white),
+      icon: const Icon(Icons.arrow_back, color: Colors.white),
       onPressed: () {
         Navigator.pop(context);
       },
     ),
     Text(
     categoryTitle.toUpperCase(),
-    style: TextStyle(
+    style: const TextStyle(
     color: Colors.white,
     fontSize: 22,
     fontWeight: FontWeight.bold,
@@ -62,8 +62,8 @@ class SingleCategoryPage extends StatelessWidget {
   }
 
   Widget buildFilters() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
       child: Wrap(
         spacing: 8.0,
         children: [
@@ -87,12 +87,12 @@ class SingleCategoryPage extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(color: Color(0xFF7EA1C1)),
           );
         }
         if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-          return Center(
+          return const Center(
             child: Text(
               "No products available",
               style: TextStyle(color: Colors.white),
@@ -105,7 +105,7 @@ class SingleCategoryPage extends StatelessWidget {
         return GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
           itemCount: products.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             childAspectRatio: 0.55,
             crossAxisSpacing: 16,
@@ -130,7 +130,7 @@ class SingleCategoryPage extends StatelessWidget {
   Widget buildProductCard(String title, String price, String imageUrl, String shortDescription, String longDescription) {
     return Container(
       decoration: BoxDecoration(
-        color: Color(0xFF1A1A1A),
+        color: const Color(0xFF1A1A1A),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -140,7 +140,7 @@ class SingleCategoryPage extends StatelessWidget {
             flex: 9,
             child: Container(
               child: ClipRRect(
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
                 child: Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
@@ -159,7 +159,7 @@ class SingleCategoryPage extends StatelessWidget {
                 children: [
                   Text(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
@@ -167,19 +167,19 @@ class SingleCategoryPage extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
-                    "\$${price}",
-                    style: TextStyle(
+                    "\$$price",
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     shortDescription,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 10,
                     ),

@@ -1,6 +1,5 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'singleCategory.dart';
 
 class CategoryPage extends StatelessWidget {
   final DatabaseReference categoriesRef =
@@ -8,7 +7,7 @@ class CategoryPage extends StatelessWidget {
 
   final VoidCallback onCartUpdate; // Callback to notify parent when cart is updated
 
-  CategoryPage({required this.onCartUpdate}); // Constructor to pass the callback
+  CategoryPage({super.key, required this.onCartUpdate}); // Constructor to pass the callback
 
   @override
   Widget build(BuildContext context) {
@@ -22,11 +21,11 @@ class CategoryPage extends StatelessWidget {
             children: [
               // App Bar
               Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: const EdgeInsets.all(20.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
+                    const Text(
                       "CATEGORY",
                       style: TextStyle(
                         color: Colors.white,
@@ -37,10 +36,10 @@ class CategoryPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.favorite_border, color: Colors.white),
+                          icon: const Icon(Icons.favorite_border, color: Colors.white),
                           onPressed: () {},
                         ),
-                        CircleAvatar(
+                        const CircleAvatar(
                           backgroundImage: AssetImage("Profile_Image.png"),
                         ),
                       ],
@@ -48,24 +47,24 @@ class CategoryPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Search Bar
               TextField(
                 decoration: InputDecoration(
                   hintText: "Search Product",
-                  hintStyle: TextStyle(color: Colors.grey),
-                  prefixIcon: Icon(Icons.search, color: Colors.grey),
+                  hintStyle: const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
-                  fillColor: Color(0xFF333333),
+                  fillColor: const Color(0xFF333333),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(30.0),
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Toggle Buttons
-              Container(
+              SizedBox(
                 width: double.infinity,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,11 +76,11 @@ class CategoryPage extends StatelessWidget {
                         },
                         child: Container(
                           height: 50,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF212121), // "Trending" unselected
                             borderRadius: BorderRadius.all(Radius.circular(40)),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               "Trending",
                               style:
@@ -91,7 +90,7 @@ class CategoryPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(width: 15), // Space between buttons
+                    const SizedBox(width: 15), // Space between buttons
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
@@ -99,11 +98,11 @@ class CategoryPage extends StatelessWidget {
                         },
                         child: Container(
                           height: 50,
-                          decoration: BoxDecoration(
+                          decoration: const BoxDecoration(
                             color: Color(0xFF7EA1C1), // "Category" selected
                             borderRadius: BorderRadius.all(Radius.circular(40)),
                           ),
-                          child: Center(
+                          child: const Center(
                             child: Text(
                               "Category",
                               style:
@@ -116,23 +115,23 @@ class CategoryPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               // Categories List
               Expanded(
                 child: FutureBuilder(
                   future: categoriesRef.get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     } else if (snapshot.hasError) {
-                      return Center(
+                      return const Center(
                           child: Text("Error fetching categories.",
                               style: TextStyle(color: Colors.white)));
                     } else if (snapshot.hasData) {
                       Map<dynamic, dynamic>? data =
                       snapshot.data!.value as Map<dynamic, dynamic>?;
                       if (data == null || data.isEmpty) {
-                        return Center(
+                        return const Center(
                             child: Text("No categories found.",
                                 style: TextStyle(color: Colors.white)));
                       }
@@ -158,7 +157,7 @@ class CategoryPage extends StatelessWidget {
                               onCartUpdate();
                             },
                             child: Container(
-                              margin: EdgeInsets.only(bottom: 16),
+                              margin: const EdgeInsets.only(bottom: 16),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20),
                                 image: DecorationImage(
@@ -170,7 +169,7 @@ class CategoryPage extends StatelessWidget {
                               alignment: Alignment.center,
                               child: Text(
                                 category["title"],
-                                style: TextStyle(
+                                style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -181,7 +180,7 @@ class CategoryPage extends StatelessWidget {
                         },
                       );
                     }
-                    return Center(
+                    return const Center(
                         child: Text("Unexpected error occurred.",
                             style: TextStyle(color: Colors.white)));
                   },

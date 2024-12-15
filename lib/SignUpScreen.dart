@@ -4,6 +4,8 @@ import 'package:flutterofflie/LoginScreen.dart';
 import 'package:flutterofflie/createProfile.dart';
 
 class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
   @override
   _SignUpScreenState createState() => _SignUpScreenState();
 }
@@ -55,7 +57,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         children: [
           // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("arm.png"), // Replace with your image path
                 fit: BoxFit.cover,
@@ -77,20 +79,20 @@ class _SignUpScreenState extends State<SignUpScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Back arrow icon at the top
                 SafeArea(
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
                         Navigator.pop(context); // Define back action
                       },
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Logo positioned in the center below the back icon
                 Center(
                   child: Column(
@@ -100,8 +102,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         width: 350, // Adjust width as needed
                         height: 200, // Adjust height as needed
                       ),
-                      SizedBox(height: 10),
-                      Text(
+                      const SizedBox(height: 10),
+                      const Text(
                         'Create your account',
                         style: TextStyle(
                           color: Colors.white,
@@ -112,37 +114,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 // Email TextField with hint hiding on focus
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85, // Adjusted width to 85% of screen width
                     child: TextField(
                       controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF212121), // Solid background color
+                        fillColor: const Color(0xFF212121), // Solid background color
                         hintText: _showEmailHint ? 'steve_watson@yourdomain.com' : null, // Conditional hint text
-                        hintStyle: TextStyle(color: Colors.white),
-                        prefixIcon: Padding(
+                        hintStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Padding(
                           padding: EdgeInsets.only(left: 15, right: 10),
                           child: Icon(Icons.email, color: Colors.white),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 25), // Increased vertical padding
+                        contentPadding: const EdgeInsets.symmetric(vertical: 25), // Increased vertical padding
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Password TextField with hint hiding on focus
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85, // Adjusted width to 85% of screen width
                     child: TextField(
                       controller: _passwordController,
@@ -150,16 +152,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF212121), // Solid background color
+                        fillColor: const Color(0xFF212121), // Solid background color
                         hintText: _showPasswordHint ? '********' : null, // Conditional hint text
 
-                        hintStyle: TextStyle(color: Colors.white),
-                        prefixIcon: Padding(
+                        hintStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Padding(
                           padding: EdgeInsets.only(left: 15, right: 10),
                           child: Icon(Icons.lock, color: Colors.white),
                         ),
                         suffixIcon: Padding(
-                          padding: EdgeInsets.only(right: 20), // Padding around the suffix icon
+                          padding: const EdgeInsets.only(right: 20), // Padding around the suffix icon
                           child: IconButton(
                             icon: Icon(
                               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -172,17 +174,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             },
                           ),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 25), // Increased vertical padding
+                        contentPadding: const EdgeInsets.symmetric(vertical: 25), // Increased vertical padding
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // Centered Remember me checkbox
                 Center(
                   child: Row(
@@ -197,25 +199,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           });
                         },
                       ),
-                      Text(
+                      const Text(
                         'Remember me',
                         style: TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Sign Up button
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: 420, // Set the desired width here
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF7EA1C1),
+                        backgroundColor: const Color(0xFF7EA1C1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 25),
+                        padding: const EdgeInsets.symmetric(vertical: 25),
                       ),
                       onPressed: () {
                         Navigator.push(
@@ -228,7 +230,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         'Sign up',
                         style: TextStyle(
                           fontSize: 18,
@@ -246,7 +248,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   ),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // "or continue with" text
                 Center(
                   child: Text(
@@ -254,39 +256,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     style: TextStyle(color: Colors.grey[500]),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Social media icons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.facebook, color: Colors.blue, size: 40),
+                      icon: const Icon(Icons.facebook, color: Colors.blue, size: 40),
                       onPressed: () {
                         // Define Facebook login action
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.g_mobiledata, color: Colors.red, size: 40), // Example for Google icon
+                      icon: const Icon(Icons.g_mobiledata, color: Colors.red, size: 40), // Example for Google icon
                       onPressed: () {
                         // Define Google login action
                       },
                     ),
                     IconButton(
-                      icon: Icon(Icons.apple, color: Colors.white, size: 40),
+                      icon: const Icon(Icons.apple, color: Colors.white, size: 40),
                       onPressed: () {
                         // Define Apple login action
                       },
                     ),
                   ],
                 ),
-                Spacer(),
+                const Spacer(),
                 // Sign In link
                 Center(
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginScreen()),
+                        MaterialPageRoute(builder: (context) => const LoginScreen()),
                       );
                     },
                     child: Text(
@@ -298,7 +300,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
               ],
             ),
           ),

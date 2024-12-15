@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'dart:typed_data'; // For Flutter Web
+// For Flutter Web
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,6 +8,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class AddProductScreen extends StatefulWidget {
+  const AddProductScreen({super.key});
+
   @override
   _AddProductScreenState createState() => _AddProductScreenState();
 }
@@ -111,7 +113,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       }
     } catch (error) {
       print("Error uploading image to ImgBB: $error");
-      throw error;
+      rethrow;
     }
   }
 
@@ -129,7 +131,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
         (_imageFile == null && _webImage == null) ||
         _selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("All fields are required, including an image and category")),
+        const SnackBar(content: Text("All fields are required, including an image and category")),
       );
       return;
     }
@@ -150,7 +152,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
       });
       print("Product saved successfully!");
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Product added successfully!")));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Product added successfully!")));
 
       // Clear inputs and navigate back
       nameController.clear();
@@ -178,12 +180,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context);
           },
         ),
-        title: Text(
+        title: const Text(
           "Add Product",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
@@ -197,40 +199,40 @@ class _AddProductScreenState extends State<AddProductScreen> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Product Name',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: shortDescriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Short Description',
                   border: OutlineInputBorder(),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: longDescriptionController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Long Description',
                   border: OutlineInputBorder(),
                 ),
                 maxLines: 4,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextField(
                 controller: priceController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Price',
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Category',
                   border: OutlineInputBorder(),
                 ),
@@ -247,7 +249,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                   });
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   kIsWeb
@@ -257,7 +259,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     width: 100,
                     height: 100,
                     color: Colors.grey[300],
-                    child: Icon(Icons.image, size: 50),
+                    child: const Icon(Icons.image, size: 50),
                   ))
                       : (_imageFile != null
                       ? Image.file(_imageFile!, width: 100, height: 100, fit: BoxFit.cover)
@@ -265,19 +267,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     width: 100,
                     height: 100,
                     color: Colors.grey[300],
-                    child: Icon(Icons.image, size: 50),
+                    child: const Icon(Icons.image, size: 50),
                   )),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   ElevatedButton(
                     onPressed: _pickImage,
-                    child: Text("Pick Image"),
+                    child: const Text("Pick Image"),
                   ),
                 ],
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _addProduct,
-                child: Text("Add Product"),
+                child: const Text("Add Product"),
               ),
             ],
           ),

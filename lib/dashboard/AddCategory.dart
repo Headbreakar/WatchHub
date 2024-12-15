@@ -2,6 +2,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class AddCategoryScreen extends StatefulWidget {
+  const AddCategoryScreen({super.key});
+
   @override
   _AddCategoryScreenState createState() => _AddCategoryScreenState();
 }
@@ -33,7 +35,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
 
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Category Added Successfully")),
+          const SnackBar(content: Text("Category Added Successfully")),
         );
 
         // Clear the input field and go back to the previous screen
@@ -43,13 +45,13 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
         // Handle errors
         print("Error adding category: $e");
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to add category")),
+          const SnackBar(content: Text("Failed to add category")),
         );
       }
     } else {
       // If the category name is empty, show a validation message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Please enter a category name")),
+        const SnackBar(content: Text("Please enter a category name")),
       );
     }
   }
@@ -61,12 +63,12 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Go back to the previous screen
           },
         ),
-        title: Text(
+        title: const Text(
           "Add Category",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
@@ -79,23 +81,23 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
             // Category Name Input Field
             TextField(
               controller: _categoryController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Category Name',
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Save Button to Add Category
             ElevatedButton(
               onPressed: _addCategory,
-              child: Text("Add Category", style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                textStyle: TextStyle(fontSize: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
               ),
+              child: const Text("Add Category", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

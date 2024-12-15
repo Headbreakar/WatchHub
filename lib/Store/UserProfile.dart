@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 class ProfileDetailsScreen extends StatelessWidget {
+  const ProfileDetailsScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,18 +29,18 @@ class ProfileDetailsScreen extends StatelessWidget {
                   color: const Color(0xFFA9C5D9),
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Row(
+                child: const Row(
                   children: [
                     // Profile Image
                     CircleAvatar(
                       radius: 30,
                       backgroundImage: AssetImage('assets/images/profile_picture.jpg'), // Replace with actual image
                     ),
-                    const SizedBox(width: 16),
+                    SizedBox(width: 16),
                     // User Name and Gender
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
+                      children: [
                         Text(
                           'Steve Watson',
                           style: TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),

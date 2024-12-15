@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:flutterofflie/Store/CartPage.dart';
 import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
 import 'package:flutterofflie/Store/wishlist.dart';
@@ -9,7 +8,7 @@ import 'package:flutterofflie/Store/wishlist.dart';
 class HomePage extends StatefulWidget {
   final VoidCallback onCartUpdate; // Callback to notify parent of cart changes
 
-  HomePage({required this.onCartUpdate}); // Constructor to accept the callback
+  const HomePage({super.key, required this.onCartUpdate}); // Constructor to accept the callback
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -19,7 +18,7 @@ class _HomePageState extends State<HomePage> {
   final DatabaseReference _productsRef =
   FirebaseDatabase.instance.ref().child('products');
 
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
   @override
@@ -40,20 +39,20 @@ class _HomePageState extends State<HomePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 buildAppBar(),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 buildSearchBar(),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 buildCategoryToggle(context),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 FutureBuilder(
                   future: _productsRef.get(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return Center(child: CircularProgressIndicator());
+                      return const Center(child: CircularProgressIndicator());
                     }
 
                     if (snapshot.hasError) {
-                      return Center(
+                      return const Center(
                         child: Text(
                           'Error fetching data',
                           style: TextStyle(color: Colors.white),
@@ -63,7 +62,7 @@ class _HomePageState extends State<HomePage> {
 
                     if (!snapshot.hasData ||
                         (snapshot.data as DataSnapshot).value == null) {
-                      return Center(
+                      return const Center(
                         child: Text(
                           'No products found',
                           style: TextStyle(color: Colors.white),
@@ -106,18 +105,18 @@ class _HomePageState extends State<HomePage> {
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.favorite_border, color: Colors.white),
+                icon: const Icon(Icons.favorite_border, color: Colors.white),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => WishlistPage(), // Navigate to WishlistPage
+                      builder: (context) => const WishlistPage(), // Navigate to WishlistPage
                     ),
                   );
                 },
               ),
-              SizedBox(width: 8),
-              CircleAvatar(
+              const SizedBox(width: 8),
+              const CircleAvatar(
                 backgroundImage: AssetImage("Profile_Image.png"),
                 radius: 20,
               ),
@@ -138,11 +137,11 @@ class _HomePageState extends State<HomePage> {
       },
       decoration: InputDecoration(
         hintText: "Search Product",
-        hintStyle: TextStyle(color: Colors.grey),
-        prefixIcon: Icon(Icons.search, color: Colors.grey),
+        hintStyle: const TextStyle(color: Colors.grey),
+        prefixIcon: const Icon(Icons.search, color: Colors.grey),
         filled: true,
-        fillColor: Color(0xFF333333),
-        contentPadding: EdgeInsets.symmetric(vertical: 12.0),
+        fillColor: const Color(0xFF333333),
+        contentPadding: const EdgeInsets.symmetric(vertical: 12.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.0),
           borderSide: BorderSide.none,
@@ -170,10 +169,10 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFF7EA1C1),
+                color: const Color(0xFF7EA1C1),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   "Trending",
                   style: TextStyle(
@@ -186,7 +185,7 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
-        SizedBox(width: 10),
+        const SizedBox(width: 10),
         Expanded(
           child: GestureDetector(
             onTap: () {
@@ -203,10 +202,10 @@ class _HomePageState extends State<HomePage> {
             child: Container(
               height: 50,
               decoration: BoxDecoration(
-                color: Color(0xFF212121),
+                color: const Color(0xFF212121),
                 borderRadius: BorderRadius.circular(40),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   "Category",
                   style: TextStyle(
@@ -226,9 +225,9 @@ class _HomePageState extends State<HomePage> {
   Widget buildWatchGrid(List items) {
     return GridView.builder(
       shrinkWrap: true,
-      physics: NeverScrollableScrollPhysics(),
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: items.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.7,
         crossAxisSpacing: 16,
@@ -267,14 +266,14 @@ class _HomePageState extends State<HomePage> {
       },
       child: Container(
         decoration: BoxDecoration(
-          color: Color(0xFF1A1A1A),
+          color: const Color(0xFF1A1A1A),
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
               child: Image.network(
                 imagePath,
                 height: 220,
@@ -284,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                   return Container(
                     height: 180,
                     color: Colors.grey[800],
-                    child: Center(
+                    child: const Center(
                       child: Icon(Icons.error, color: Colors.red),
                     ),
                   );
@@ -298,7 +297,7 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -306,19 +305,19 @@ class _HomePageState extends State<HomePage> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
                     price,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  SizedBox(height: 6),
+                  const SizedBox(height: 6),
                   Text(
                     shortDescription,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 12,
                     ),

@@ -163,7 +163,7 @@ class _CartPageState extends State<CartPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => MainScreen()),
+              MaterialPageRoute(builder: (context) => const MainScreen()),
             );
           },
         ),
@@ -173,11 +173,11 @@ class _CartPageState extends State<CartPage> {
         ),
       ),
       body: _isLoading
-          ? Center(
+          ? const Center(
         child: CircularProgressIndicator(color: Colors.white),
       )
           : _cartItems.isEmpty
-          ? Center(
+          ? const Center(
         child: Text(
           "Your cart is empty!",
           style: TextStyle(color: Colors.white, fontSize: 18),

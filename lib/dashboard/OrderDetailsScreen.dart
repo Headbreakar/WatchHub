@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class OrderDetailScreen extends StatelessWidget {
   final Map<String, dynamic> order; // Order details passed from the previous screen
 
-  OrderDetailScreen({required this.order});
+  const OrderDetailScreen({super.key, required this.order});
 
   @override
   Widget build(BuildContext context) {
@@ -12,10 +12,10 @@ class OrderDetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: const Text(
           "Order Details",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
@@ -27,31 +27,31 @@ class OrderDetailScreen extends StatelessWidget {
           children: [
             // Customer Name
             _buildDetailRow("Customer Name", order['customerName']),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Total Price
             _buildDetailRow("Total Price", "\$${order['totalPrice']}"),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Address
             _buildDetailRow("Address", order['address']),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Contact Number
             _buildDetailRow("Contact Number", order['contactNumber']),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Email
             _buildDetailRow("Email", order['email']),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Additional Notes
             _buildDetailRow("Notes", order['notes'] ?? "No additional notes"),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Order Date
             _buildDetailRow("Order Date", order['orderDate']),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
 
             // Status
             _buildDetailRow("Status", order['status']),
@@ -74,10 +74,10 @@ class OrderDetailScreen extends StatelessWidget {
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: 4),
+        const SizedBox(height: 4),
         Text(
           content,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 18,
             color: Colors.black,
           ),

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class EditOrderScreen extends StatefulWidget {
   final Map<String, dynamic> order;
 
-  EditOrderScreen({required this.order});
+  const EditOrderScreen({super.key, required this.order});
 
   @override
   _EditOrderScreenState createState() => _EditOrderScreenState();
@@ -64,13 +64,13 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Text(
+        title: const Text(
           "Edit Order",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () => Navigator.pop(context),
         ),
       ),
@@ -81,25 +81,25 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildTextField("Customer Name", customerNameController),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTextField("Total Price", totalPriceController, isNumber: true),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTextField("Address", addressController),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTextField("Contact Number", contactNumberController),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTextField("Email", emailController),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               _buildTextField("Notes", notesController, maxLines: 3),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveChanges,
-                child: Text("Save Changes", style: TextStyle(color: Colors.white)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
-                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                  textStyle: TextStyle(fontSize: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 16),
                 ),
+                child: const Text("Save Changes", style: TextStyle(color: Colors.white)),
               ),
             ],
           ),
@@ -115,7 +115,7 @@ class _EditOrderScreenState extends State<EditOrderScreen> {
       maxLines: maxLines,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(),
+        border: const OutlineInputBorder(),
       ),
     );
   }

@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,14 +13,14 @@ class CreateProfileScreen extends StatefulWidget {
   final String email;
   final String password;
 
-  CreateProfileScreen({required this.email, required this.password});
+  const CreateProfileScreen({super.key, required this.email, required this.password});
 
   @override
   _CreateProfileScreenState createState() => _CreateProfileScreenState();
 }
 
 class _CreateProfileScreenState extends State<CreateProfileScreen> {
-  bool _isPasswordVisible = false;
+  final bool _isPasswordVisible = false;
   File? _selectedImage; // For mobile/desktop
   Uint8List? _webImage; // For Flutter Web
   final ImagePicker _picker = ImagePicker(); // ImagePicker instance
@@ -126,13 +125,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Profile created successfully!')),
+        const SnackBar(content: Text('Profile created successfully!')),
       );
 
       // Navigate to the login screen
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
     } catch (e) {
       print('Error saving user data: $e');
@@ -149,7 +148,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
         children: [
           // Background with blur effect
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("arm.png"),
                 fit: BoxFit.cover,
@@ -173,11 +172,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                   child: Row(
                     children: [
                       IconButton(
-                        icon: Icon(Icons.arrow_back, color: Colors.white),
+                        icon: const Icon(Icons.arrow_back, color: Colors.white),
                         onPressed: () => Navigator.pop(context),
                       ),
-                      Spacer(),
-                      Text(
+                      const Spacer(),
+                      const Text(
                         'Fill your Profile',
                         style: TextStyle(
                           color: Colors.white,
@@ -185,11 +184,11 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      Spacer(),
+                      const Spacer(),
                     ],
                   ),
                 ),
-                Spacer(flex: 1),
+                const Spacer(flex: 1),
                 // Profile Picture
                 Center(
                   child: GestureDetector(
@@ -201,13 +200,13 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           ? (_webImage != null ? MemoryImage(_webImage!) as ImageProvider<Object> : null)
                           : (_selectedImage != null ? FileImage(_selectedImage!) as ImageProvider<Object> : null),
                       child: (_webImage == null && _selectedImage == null)
-                          ? Icon(Icons.camera_alt, size: 40, color: Colors.white)
+                          ? const Icon(Icons.camera_alt, size: 40, color: Colors.white)
                           : null,
                     ),
                   ),
                 ),
 
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Form Fields
                 Center(
                   child: SingleChildScrollView(
@@ -219,37 +218,37 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
                           icon: Icons.person,
                           controller: _nameController,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         buildTextField(
                           hintText: 'steve_watson@yourdomain.com',
                           icon: Icons.email,
                           controller: _emailController,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         buildTextField(
                           hintText: '+1 111 856 783 997',
                           icon: Icons.phone,
                           controller: _phoneController,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         buildTextField(
                           hintText: '20845 Oakridge Farm Lane (NYC)',
                           icon: Icons.location_on,
                           controller: _addressController,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                         buildTextField(
                           hintText: '********',
                           icon: Icons.lock,
                           controller: _passwordController,
                           obscureText: true,
                         ),
-                        SizedBox(height: 20),
+                        const SizedBox(height: 20),
                       ],
                     ),
                   ),
                 ),
-                Spacer(flex: 4),
+                const Spacer(flex: 4),
               ],
             ),
           ),
@@ -259,15 +258,15 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
             right: 40,
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xFF7EA1C1),
+                backgroundColor: const Color(0xFF7EA1C1),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 25),
-                minimumSize: Size(double.infinity, 60),
+                padding: const EdgeInsets.symmetric(vertical: 25),
+                minimumSize: const Size(double.infinity, 60),
               ),
               onPressed: saveUserProfile,
-              child: Text(
+              child: const Text(
                 'Continue',
                 style: TextStyle(
                   fontSize: 18,
@@ -292,19 +291,19 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       obscureText: obscureText,
       decoration: InputDecoration(
         filled: true,
-        fillColor: Color(0xFF212121),
+        fillColor: const Color(0xFF212121),
         hintText: hintText,
         hintStyle: TextStyle(
           color: Colors.white.withOpacity(0.3),
         ),
         prefixIcon: Icon(icon, color: Colors.white),
-        contentPadding: EdgeInsets.symmetric(vertical: 25),
+        contentPadding: const EdgeInsets.symmetric(vertical: 25),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
           borderSide: BorderSide.none,
         ),
       ),
-      style: TextStyle(color: Colors.white),
+      style: const TextStyle(color: Colors.white),
     );
   }
 }

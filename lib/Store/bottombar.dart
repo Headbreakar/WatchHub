@@ -4,20 +4,20 @@ class CustomBottomNavBar extends StatelessWidget {
   final int selectedIndex;
   final Function(int) onItemTapped;
 
-  CustomBottomNavBar({required this.selectedIndex, required this.onItemTapped});
+  const CustomBottomNavBar({super.key, required this.selectedIndex, required this.onItemTapped});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: 20), // Added bottom margin for floating effect
       decoration: BoxDecoration(
-        color: Color.fromRGBO(33, 33, 33, 0.82),  // Semi-transparent gray
-        borderRadius: BorderRadius.all(Radius.circular(50)), // Fully circular edges
+        color: const Color.fromRGBO(33, 33, 33, 0.82),  // Semi-transparent gray
+        borderRadius: const BorderRadius.all(Radius.circular(50)), // Fully circular edges
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1), // Subtle shadow for floating effect
             blurRadius: 10,
-            offset: Offset(0, -3),
+            offset: const Offset(0, -3),
           ),
         ],
       ),
@@ -49,7 +49,7 @@ class CustomBottomNavBar extends StatelessWidget {
                   width: 6,
                   height: 6,
                   margin: const EdgeInsets.only(right: 6),
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Color(0xFF7EA1C1), // Blue dot for the active tab
                     shape: BoxShape.circle,
                   ),
@@ -64,7 +64,7 @@ class CustomBottomNavBar extends StatelessWidget {
               ),
             ],
           ),
-          SizedBox(height: 4), // Slightly reduced spacing
+          const SizedBox(height: 4), // Slightly reduced spacing
           Icon(
             icon,
             color: isSelected ? Colors.white : Colors.grey,

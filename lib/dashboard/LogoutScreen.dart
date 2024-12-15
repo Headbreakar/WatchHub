@@ -7,6 +7,8 @@ import 'ProductsScreen.dart';
 import 'UsersListScreen.dart';
 
 class LogoutScreen extends StatelessWidget {
+  const LogoutScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,18 +17,18 @@ class LogoutScreen extends StatelessWidget {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
+            icon: const Icon(Icons.menu, color: Colors.black),
             onPressed: () {
               Scaffold.of(context).openDrawer(); // Open the drawer
             },
           ),
         ),
-        title: Text(
+        title: const Text(
           "Logout",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
+        actions: const [
           CircleAvatar(
             backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
           ),
@@ -37,7 +39,7 @@ class LogoutScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            UserAccountsDrawerHeader(
+            const UserAccountsDrawerHeader(
               accountName: Text("Anas Ashfaq"),
               accountEmail: Text("anas.ashfaq@example.com"),
               currentAccountPicture: CircleAvatar(
@@ -48,8 +50,8 @@ class LogoutScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text("Dashboard"),
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -58,53 +60,53 @@ class LogoutScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.production_quantity_limits),
-              title: Text("Products"),
+              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text("Products"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductsScreen()),
+                  MaterialPageRoute(builder: (context) => const ProductsScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text("Orders"),
+              leading: const Icon(Icons.history),
+              title: const Text("Orders"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                  MaterialPageRoute(builder: (context) => const OrdersScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Users"),
+              leading: const Icon(Icons.person),
+              title: const Text("Users"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UsersListScreen()),
+                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.feedback),
-              title: Text("Feedbacks"),
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedbacks"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                  MaterialPageRoute(builder: (context) => const LogoutScreen()),
                 );
               },
             ),
@@ -117,11 +119,11 @@ class LogoutScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 "Are you sure you want to log out?",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -134,12 +136,12 @@ class LogoutScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: TextStyle(fontSize: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: Text("Logout",style: TextStyle(color: Colors.white),),
+                    child: const Text("Logout",style: TextStyle(color: Colors.white),),
                   ),
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   // Cancel Button
                   ElevatedButton(
                     onPressed: () {
@@ -147,10 +149,10 @@ class LogoutScreen extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
-                      padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: TextStyle(fontSize: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                      textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: Text("Cancel",style: TextStyle(color: Colors.white),),
+                    child: const Text("Cancel",style: TextStyle(color: Colors.white),),
                   ),
                 ],
               ),

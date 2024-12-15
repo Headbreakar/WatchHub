@@ -6,6 +6,8 @@ import 'profile.dart';
 import 'bottombar.dart';
 
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
   @override
   _MainScreenState createState() => _MainScreenState();
 }
@@ -23,8 +25,8 @@ class _MainScreenState extends State<MainScreen> {
     _screens.addAll([
       HomePage(onCartUpdate: _refreshCart), // Pass callback
       CategoryPage(onCartUpdate: _refreshCart), // Pass callback
-      CartPage(), // No callback needed for the CartPage itself
-      ProfilePage(),
+      const CartPage(), // No callback needed for the CartPage itself
+      const ProfilePage(),
     ]);
   }
 

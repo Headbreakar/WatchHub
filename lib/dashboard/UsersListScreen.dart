@@ -17,6 +17,8 @@ class UsersListScreen extends StatelessWidget {
     // Add more users if needed for testing
   ];
 
+  const UsersListScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,18 +27,18 @@ class UsersListScreen extends StatelessWidget {
         elevation: 0,
         leading: Builder(
           builder: (context) => IconButton(
-            icon: Icon(Icons.menu, color: Colors.black),
+            icon: const Icon(Icons.menu, color: Colors.black),
             onPressed: () {
               Scaffold.of(context).openDrawer(); // Open the drawer
             },
           ),
         ),
-        title: Text(
+        title: const Text(
           "Users",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
+        actions: const [
           CircleAvatar(
             backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
           ),
@@ -47,7 +49,7 @@ class UsersListScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            UserAccountsDrawerHeader(
+            const UserAccountsDrawerHeader(
               accountName: Text("Anas Ashfaq"),
               accountEmail: Text("anas.ashfaq@example.com"),
               currentAccountPicture: CircleAvatar(
@@ -58,8 +60,8 @@ class UsersListScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text("Dashboard"),
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -68,63 +70,63 @@ class UsersListScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.production_quantity_limits),
-              title: Text("Products"),
+              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text("Products"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductsScreen()),
+                  MaterialPageRoute(builder: (context) => const ProductsScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.category),
-              title: Text("Categories"),
+              leading: const Icon(Icons.category),
+              title: const Text("Categories"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                  MaterialPageRoute(builder: (context) => const CategoriesScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text("Orders"),
+              leading: const Icon(Icons.history),
+              title: const Text("Orders"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                  MaterialPageRoute(builder: (context) => const OrdersScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Users"),
+              leading: const Icon(Icons.person),
+              title: const Text("Users"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UsersListScreen()),
+                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.feedback),
-              title: Text("Feedbacks"),
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedbacks"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                  MaterialPageRoute(builder: (context) => const LogoutScreen()),
                 );
               },
             ),
@@ -138,7 +140,7 @@ class UsersListScreen extends StatelessWidget {
           itemBuilder: (context, index) {
             final user = users[index];
             return Card(
-              margin: EdgeInsets.symmetric(vertical: 8),
+              margin: const EdgeInsets.symmetric(vertical: 8),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Row(
@@ -149,12 +151,12 @@ class UsersListScreen extends StatelessWidget {
                       children: [
                         Text(
                           user['name'] ?? 'No Name',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        SizedBox(height: 4),
+                        const SizedBox(height: 4),
                         Text(
                           user['email'] ?? 'No Email',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          style: const TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ],
                     ),
@@ -162,7 +164,7 @@ class UsersListScreen extends StatelessWidget {
                       children: [
                         // View Button
                         IconButton(
-                          icon: Icon(Icons.visibility, color: Colors.blue),
+                          icon: const Icon(Icons.visibility, color: Colors.blue),
                           onPressed: () {
                             Navigator.push(
                               context,
@@ -172,10 +174,10 @@ class UsersListScreen extends StatelessWidget {
                             );
                           },
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         // Delete Button
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
                             // Delete the user
                             print("Delete ${user['name']}");

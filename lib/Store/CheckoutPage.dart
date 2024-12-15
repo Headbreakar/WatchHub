@@ -177,11 +177,11 @@ class CheckoutPage extends StatelessWidget {
   }
 
   Widget _buildTotal() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: const [
+        children: [
           Text(
             'Total :',
             style: TextStyle(

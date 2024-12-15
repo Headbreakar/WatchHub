@@ -1,11 +1,12 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutterofflie/Store/homepage.dart';
 import '../Store/mainscreen.dart';
 
 
 class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
   @override
   _LoginScreenState createState() => _LoginScreenState();
 }
@@ -69,7 +70,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // Redirect to HomeScreen on success
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => MainScreen()),
+        MaterialPageRoute(builder: (context) => const MainScreen()),
       );
     } on FirebaseAuthException catch (e) {
       print('FirebaseAuthException: ${e.code}, ${e.message}'); // Add this
@@ -103,11 +104,11 @@ class _LoginScreenState extends State<LoginScreen> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Error'),
+        title: const Text('Error'),
         content: Text(message),
         actions: [
           TextButton(
-            child: Text('OK'),
+            child: const Text('OK'),
             onPressed: () {
               Navigator.of(ctx).pop();
             },
@@ -124,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
         children: [
           // Background Image
           Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage("arm.png"), // Replace with your image path
                 fit: BoxFit.cover,
@@ -146,20 +147,20 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Back arrow icon at the top
                 SafeArea(
                   child: Align(
                     alignment: Alignment.topLeft,
                     child: IconButton(
-                      icon: Icon(Icons.arrow_back, color: Colors.white),
+                      icon: const Icon(Icons.arrow_back, color: Colors.white),
                       onPressed: () {
                         Navigator.pop(context);
                       },
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Logo positioned in the center below the back icon
                 Center(
                   child: Column(
@@ -169,8 +170,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         width: 250,
                         height: 150,
                       ),
-                      SizedBox(height: 10),
-                      Text(
+                      const SizedBox(height: 10),
+                      const Text(
                         'Log in to your account',
                         style: TextStyle(
                           color: Colors.white,
@@ -181,37 +182,37 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
                 // Email TextField with hint hiding on focus
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85,
                     child: TextField(
                       controller: _emailController,
                       focusNode: _emailFocusNode,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF212121),
+                        fillColor: const Color(0xFF212121),
                         hintText: _showEmailHint ? 'steve_watson@yourdomain.com' : null,
-                        hintStyle: TextStyle(color: Colors.white),
-                        prefixIcon: Padding(
+                        hintStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Padding(
                           padding: EdgeInsets.only(left: 15, right: 10),
                           child: Icon(Icons.email, color: Colors.white),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 25),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 25),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Password TextField with hint hiding on focus
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85,
                     child: TextField(
                       controller: _passwordController,
@@ -219,15 +220,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       focusNode: _passwordFocusNode,
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: Color(0xFF212121),
+                        fillColor: const Color(0xFF212121),
                         hintText: _showPasswordHint ? '********' : null,
-                        hintStyle: TextStyle(color: Colors.white),
-                        prefixIcon: Padding(
+                        hintStyle: const TextStyle(color: Colors.white),
+                        prefixIcon: const Padding(
                           padding: EdgeInsets.only(left: 15, right: 10),
                           child: Icon(Icons.lock, color: Colors.white),
                         ),
                         suffixIcon: Padding(
-                          padding: EdgeInsets.only(right: 20),
+                          padding: const EdgeInsets.only(right: 20),
                           child: IconButton(
                             icon: Icon(
                               _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
@@ -240,17 +241,17 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                         ),
-                        contentPadding: EdgeInsets.symmetric(vertical: 25),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 25),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
                           borderSide: BorderSide.none,
                         ),
                       ),
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 // Remember me checkbox
                 Center(
                   child: Row(
@@ -265,30 +266,30 @@ class _LoginScreenState extends State<LoginScreen> {
                           });
                         },
                       ),
-                      Text(
+                      const Text(
                         'Remember me',
                         style: TextStyle(color: Colors.white),
                       ),
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 // Log In button
                 Center(
-                  child: Container(
+                  child: SizedBox(
                     width: 420,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF3A4F7A),
+                        backgroundColor: const Color(0xFF3A4F7A),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
-                        padding: EdgeInsets.symmetric(vertical: 25),
+                        padding: const EdgeInsets.symmetric(vertical: 25),
                       ),
                       onPressed: _isLoading ? null : _login,
                       child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text(
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
                         'Log in',
                         style: TextStyle(fontSize: 18, color: Colors.white),
                       ),

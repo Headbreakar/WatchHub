@@ -10,6 +10,8 @@ class DashboardScreen extends StatelessWidget {
   // Create a GlobalKey for the Scaffold state
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
+  DashboardScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,17 +21,17 @@ class DashboardScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.menu, color: Colors.black),
+          icon: const Icon(Icons.menu, color: Colors.black),
           onPressed: () {
             _scaffoldKey.currentState?.openDrawer(); // Open the drawer using the scaffoldKey
           },
         ),
-        title: Text(
+        title: const Text(
           "WatchHub Dashboard",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
+        actions: const [
           CircleAvatar(
             backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
           ),
@@ -40,7 +42,7 @@ class DashboardScreen extends StatelessWidget {
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
-            UserAccountsDrawerHeader(
+            const UserAccountsDrawerHeader(
               accountName: Text("Anas Ashfaq"),
               accountEmail: Text("anas.ashfaq@example.com"),
               currentAccountPicture: CircleAvatar(
@@ -51,8 +53,8 @@ class DashboardScreen extends StatelessWidget {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.dashboard),
-              title: Text("Dashboard"),
+              leading: const Icon(Icons.dashboard),
+              title: const Text("Dashboard"),
               onTap: () {
                 Navigator.push(
                   context,
@@ -61,63 +63,63 @@ class DashboardScreen extends StatelessWidget {
               },
             ),
             ListTile(
-              leading: Icon(Icons.production_quantity_limits),
-              title: Text("Products"),
+              leading: const Icon(Icons.production_quantity_limits),
+              title: const Text("Products"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ProductsScreen()),
+                  MaterialPageRoute(builder: (context) => const ProductsScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.category),
-              title: Text("Categories"),
+              leading: const Icon(Icons.category),
+              title: const Text("Categories"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CategoriesScreen()),
+                  MaterialPageRoute(builder: (context) => const CategoriesScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.history),
-              title: Text("Orders"),
+              leading: const Icon(Icons.history),
+              title: const Text("Orders"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => OrdersScreen()),
+                  MaterialPageRoute(builder: (context) => const OrdersScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text("Users"),
+              leading: const Icon(Icons.person),
+              title: const Text("Users"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => UsersListScreen()),
+                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
                 );
               },
             ),
-            Divider(),
+            const Divider(),
             ListTile(
-              leading: Icon(Icons.feedback),
-              title: Text("Feedbacks"),
+              leading: const Icon(Icons.feedback),
+              title: const Text("Feedbacks"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
                 );
               },
             ),
             ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Logout"),
+              leading: const Icon(Icons.logout),
+              title: const Text("Logout"),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => LogoutScreen()),
+                  MaterialPageRoute(builder: (context) => const LogoutScreen()),
                 );
               },
             ),
@@ -136,8 +138,8 @@ class DashboardScreen extends StatelessWidget {
                   color: Colors.grey[200],
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: const TextField(
                   decoration: InputDecoration(
                     icon: Icon(Icons.search, color: Colors.grey),
                     hintText: "Search for something",
@@ -145,29 +147,29 @@ class DashboardScreen extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // My Cards Section
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  const Text(
                     "My Cards",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  TextButton(onPressed: () {}, child: Text("See All")),
+                  TextButton(onPressed: () {}, child: const Text("See All")),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Card Widget
               Container(
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   color: Colors.blue,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
+                child: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
@@ -225,17 +227,17 @@ class DashboardScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Recent Transaction Section
-              Text(
+              const Text(
                 "Recent Transactions",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
 
               // Transaction Items
-              ListTile(
+              const ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.yellow,
                   child: Icon(Icons.attach_money, color: Colors.white),
@@ -247,7 +249,7 @@ class DashboardScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
                 ),
               ),
-              ListTile(
+              const ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.blue,
                   child: Icon(Icons.payment, color: Colors.white),
@@ -259,7 +261,7 @@ class DashboardScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
               ),
-              ListTile(
+              const ListTile(
                 leading: CircleAvatar(
                   backgroundColor: Colors.green,
                   child: Icon(Icons.account_circle, color: Colors.white),
@@ -271,31 +273,31 @@ class DashboardScreen extends StatelessWidget {
                   style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
                 ),
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Balance History Section
-              Text(
+              const Text(
                 "Balance History",
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               // Balance History Items
               Container(
                 decoration: BoxDecoration(
                   color: Colors.grey[100],
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.all(16),
+                padding: const EdgeInsets.all(16),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text("Current Balance", style: TextStyle(color: Colors.grey[700], fontSize: 16)),
-                    SizedBox(height: 8),
-                    Text(
+                    const SizedBox(height: 8),
+                    const Text(
                       "\$12,600",
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
-                    Divider(height: 20, color: Colors.grey),
+                    const Divider(height: 20, color: Colors.grey),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -303,16 +305,16 @@ class DashboardScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Weekly Income", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
-                            SizedBox(height: 4),
-                            Text("\$2,500", style: TextStyle(fontSize: 18, color: Colors.green)),
+                            const SizedBox(height: 4),
+                            const Text("\$2,500", style: TextStyle(fontSize: 18, color: Colors.green)),
                           ],
                         ),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text("Weekly Expenses", style: TextStyle(color: Colors.grey[700], fontSize: 14)),
-                            SizedBox(height: 4),
-                            Text("\$1,200", style: TextStyle(fontSize: 18, color: Colors.red)),
+                            const SizedBox(height: 4),
+                            const Text("\$1,200", style: TextStyle(fontSize: 18, color: Colors.red)),
                           ],
                         ),
                       ],

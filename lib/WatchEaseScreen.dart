@@ -4,6 +4,8 @@ import 'package:flutterofflie/SignUpScreen.dart';
 import 'package:flutterofflie/LoginScreen.dart';
 
 class WatchEaseScreen extends StatelessWidget {
+  const WatchEaseScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,7 +35,7 @@ class WatchEaseScreen extends StatelessWidget {
                     height: 100, // Adjusted height
                   ),
                 ),
-                Spacer(), // Pushes main text block to the bottom
+                const Spacer(), // Pushes main text block to the bottom
                 // Main description text and button positioned at the bottom
                 Padding(
                   padding: const EdgeInsets.only(bottom: 60.0),
@@ -43,7 +45,7 @@ class WatchEaseScreen extends StatelessWidget {
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // Blur effect
                       child: Container(
                         width: MediaQuery.of(context).size.width * 0.9, // Adjust width to 90% of screen width
-                        padding: EdgeInsets.all(20), // Padding inside the container
+                        padding: const EdgeInsets.all(20), // Padding inside the container
                         decoration: BoxDecoration(
                           color: Colors.black.withOpacity(0.3), // Semi-transparent black background
                           borderRadius: BorderRadius.circular(20),
@@ -55,7 +57,7 @@ class WatchEaseScreen extends StatelessWidget {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Text(
+                            const Text(
                               'Explore the watchease here',
                               style: TextStyle(
                                 color: Colors.white,
@@ -63,7 +65,7 @@ class WatchEaseScreen extends StatelessWidget {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(height: 8),
+                            const SizedBox(height: 8),
                             Text(
                               'The best watch app in your device.\nAnswer of watchkeeper to find their watch',
                               textAlign: TextAlign.center,
@@ -72,14 +74,14 @@ class WatchEaseScreen extends StatelessWidget {
                                 fontSize: 14,
                               ),
                             ),
-                            SizedBox(height: 30),
+                            const SizedBox(height: 30),
                             // Button for "Create an account"
-                            Container(
+                            SizedBox(
                               width: 300,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20), // Adjusted padding
-                                  backgroundColor: Color(0xFF3A4F7A).withOpacity(0.5),
+                                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20), // Adjusted padding
+                                  backgroundColor: const Color(0xFF3A4F7A).withOpacity(0.5),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(30),
                                   ),
@@ -87,23 +89,23 @@ class WatchEaseScreen extends StatelessWidget {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(builder: (context) => SignUpScreen()),
+                                    MaterialPageRoute(builder: (context) => const SignUpScreen()),
                                   );
                                 },
-                                child: Text(
+                                child: const Text(
                                   'Create an account',
                                   style: TextStyle(fontSize: 16, color: Colors.white),
                                 ),
                               ),
                             ),
                             // Already have an account text
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             GestureDetector(
                               onTap: () {
                                 // Navigate to login screen
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => LoginScreen()), // Replace with actual LoginScreen widget
+                                  MaterialPageRoute(builder: (context) => const LoginScreen()), // Replace with actual LoginScreen widget
                                 );
                               },
                               child: Text(

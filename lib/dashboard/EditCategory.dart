@@ -5,7 +5,7 @@ class EditCategoryScreen extends StatefulWidget {
   final String categoryId; // The unique ID of the category in the database
   final String initialCategoryName; // The current name of the category
 
-  EditCategoryScreen({required this.categoryId, required this.initialCategoryName});
+  const EditCategoryScreen({super.key, required this.categoryId, required this.initialCategoryName});
 
   @override
   _EditCategoryScreenState createState() => _EditCategoryScreenState();
@@ -36,7 +36,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
 
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Category updated successfully!")),
+        const SnackBar(content: Text("Category updated successfully!")),
       );
 
       // Navigate back
@@ -45,7 +45,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       // Handle errors
       print("Error updating category: $error");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Failed to update category")),
+        const SnackBar(content: Text("Failed to update category")),
       );
     }
   }
@@ -57,12 +57,12 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Go back to the previous screen
           },
         ),
-        title: Text(
+        title: const Text(
           "Edit Category",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
@@ -75,13 +75,13 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
             // Category Name Input Field
             TextField(
               controller: _categoryController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Category Name',
                 border: OutlineInputBorder(),
                 contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Save Button
             ElevatedButton(
@@ -91,16 +91,16 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
                   _updateCategory(updatedCategoryName); // Update the category in the database
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please enter a category name")),
+                    const SnackBar(content: Text("Please enter a category name")),
                   );
                 }
               },
-              child: Text("Save", style: TextStyle(color: Colors.white)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                textStyle: TextStyle(fontSize: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                textStyle: const TextStyle(fontSize: 16),
               ),
+              child: const Text("Save", style: TextStyle(color: Colors.white)),
             ),
           ],
         ),

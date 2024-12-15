@@ -4,7 +4,7 @@ class UserDetailScreen extends StatelessWidget {
   // Sample user details for demonstration purposes
   final Map<String, String> user;
 
-  UserDetailScreen({required this.user});
+  const UserDetailScreen({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +13,17 @@ class UserDetailScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.black),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
           onPressed: () {
             Navigator.pop(context); // Go back to the previous screen
           },
         ),
-        title: Text(
+        title: const Text(
           "User Details",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: [
+        actions: const [
           CircleAvatar(
             backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
           ),
@@ -36,44 +36,44 @@ class UserDetailScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Profile Picture
-            Center(
+            const Center(
               child: CircleAvatar(
                 radius: 50,
                 backgroundImage: NetworkImage('https://i.pravatar.cc/300'), // Placeholder image
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // User Information
             Text(
               "Name: ${user['name'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Email: ${user['email'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Phone: ${user['phone'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Address: ${user['address'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Date of Birth: ${user['dob'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            Divider(),
+            const Divider(),
             Text(
               "Registration Date: ${user['registrationDate'] ?? 'N/A'}",
-              style: TextStyle(fontSize: 16),
+              style: const TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // View More Details Button
 
           ],

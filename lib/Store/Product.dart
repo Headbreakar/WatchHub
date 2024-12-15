@@ -10,7 +10,7 @@ import 'CartPage.dart';
 class ProductPage extends StatefulWidget {
   final String productId; // Pass productId dynamically
 
-  ProductPage({required this.productId});
+  const ProductPage({super.key, required this.productId});
 
   @override
   _ProductPageState createState() => _ProductPageState();
@@ -189,7 +189,7 @@ class _ProductPageState extends State<ProductPage>
       backgroundColor: Colors.black,
       body: SafeArea(
         child: _productData == null
-            ? Center(
+            ? const Center(
                 child: CircularProgressIndicator(
                   color: Colors.white,
                 ),
@@ -235,7 +235,7 @@ class _ProductPageState extends State<ProductPage>
                             onPressed: () {
                               Navigator.pop(context);
                             },
-                            icon: Icon(Icons.close, color: Colors.white),
+                            icon: const Icon(Icons.close, color: Colors.white),
                           ),
                         ),
                       ],
@@ -246,7 +246,7 @@ class _ProductPageState extends State<ProductPage>
                   Container(
                     width: double.infinity,
                     height: 250,
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Color(0xFF212121),
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20),
@@ -262,35 +262,35 @@ class _ProductPageState extends State<ProductPage>
                           // Title
                           Text(
                             _productData!['name'] ?? 'Product Name',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 22,
                               fontWeight: FontWeight.w100,
                             ),
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
                           // Price
                           Text(
                             '\$${_productData!['price']} / Price Incl. all Taxes',
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.white,
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
                           // Size options
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
                               _sizeOption('35 mm', _selectedSize == '35 mm'),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               _sizeOption('40 mm', _selectedSize == '40 mm'),
-                              SizedBox(width: 12),
+                              const SizedBox(width: 12),
                               _sizeOption('45 mm', _selectedSize == '45 mm'),
                             ],
                           ),
-                          SizedBox(height: 24),
+                          const SizedBox(height: 24),
                           // Add to Bag button and icons
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -341,7 +341,7 @@ class _ProductPageState extends State<ProductPage>
                                     ),
                                   ),
 
-                                  SizedBox(width: 12),
+                                  const SizedBox(width: 12),
                                   // Bag Icon
                                   IconButton(
                                     onPressed: () {
@@ -349,11 +349,11 @@ class _ProductPageState extends State<ProductPage>
                                         context,
                                         MaterialPageRoute(
                                           builder: (context) =>
-                                              CartPage(), // Replace with your CartPage widget
+                                              const CartPage(), // Replace with your CartPage widget
                                         ),
                                       );
                                     },
-                                    icon: Icon(
+                                    icon: const Icon(
                                       IconlyLight.bag,
                                       color: Colors.white,
                                       size: 35,
@@ -378,7 +378,7 @@ class _ProductPageState extends State<ProductPage>
       key: const ValueKey("addToBagButton"), // Key for AnimatedSwitcher
       onPressed: _addToCart,
       style: ElevatedButton.styleFrom(
-        backgroundColor: Color(0xFFA9C5D9),
+        backgroundColor: const Color(0xFFA9C5D9),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),
@@ -437,7 +437,7 @@ class _ProductPageState extends State<ProductPage>
           return FadeTransition(
             opacity: animation,
             child: SlideTransition(
-              position: Tween<Offset>(begin: Offset(0, 0.1), end: Offset.zero)
+              position: Tween<Offset>(begin: const Offset(0, 0.1), end: Offset.zero)
                   .animate(animation),
               child: child,
             ),
@@ -447,7 +447,7 @@ class _ProductPageState extends State<ProductPage>
           key: ValueKey<bool>(isSelected),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
           decoration: BoxDecoration(
-            color: isSelected ? Color(0xFFA9C5D9) : Colors.black,
+            color: isSelected ? const Color(0xFFA9C5D9) : Colors.black,
             borderRadius: BorderRadius.circular(8),
           ),
           child: Center(

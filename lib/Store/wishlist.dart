@@ -291,7 +291,7 @@ class _WishlistPageState extends State<WishlistPage> {
           onPressed: () {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => MainScreen()),
+              MaterialPageRoute(builder: (context) => const MainScreen()),
             );
           },
         ),
@@ -304,11 +304,11 @@ class _WishlistPageState extends State<WishlistPage> {
         children: [
           Expanded(
             child: _isLoading
-                ? Center(
+                ? const Center(
               child: CircularProgressIndicator(color: Colors.white),
             )
                 : _wishlistItems.isEmpty
-                ? Center(
+                ? const Center(
               child: Text(
                 "Your wishlist is empty!",
                 style: TextStyle(color: Colors.white, fontSize: 18),
