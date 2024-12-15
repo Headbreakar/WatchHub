@@ -18,6 +18,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late Future<Map<String, dynamic>?> _userData;
+  bool _isUploading = false; // Loader for image upload
+  bool _isLoggingOut = false; // Loader for logout
 
   @override
   void initState() {
@@ -29,57 +31,68 @@ class _ProfilePageState extends State<ProfilePage> {
     final ImagePicker picker = ImagePicker();
     File? selectedImage;
     Uint8List? webImage;
-    const String imgbbApiKey = "d681de430ca3e38e4fd9b87a08a91f96"; // Replace with your ImgBB API key
+    const String imgbbApiKey = "d681de430ca3e38e4fd9b87a08a91f96";
+
+    setState(() => _isUploading = true); // Show loader during upload
 
     try {
       // Pick an image
       final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-      if (pickedFile == null) return;
+      if (pickedFile == null) {
+        setState(() => _isUploading = false); // No image selected
+        return;
+      }
 
-      // Check if it's a web app or mobile
+      // Check platform and prepare image
       if (kIsWeb) {
         webImage = await pickedFile.readAsBytes();
       } else {
         selectedImage = File(pickedFile.path);
       }
 
-      // Upload the image to ImgBB
-      String? uploadedImageUrl = await _uploadImageToImgBB(
+      // Upload the image
+      final String? uploadedImageUrl = await _uploadImageToImgBB(
         webImage: webImage,
         file: selectedImage,
         imgbbApiKey: imgbbApiKey,
       );
 
       if (uploadedImageUrl != null) {
-        // Update Firestore with the new image URL
         final userId = FirebaseAuth.instance.currentUser?.uid;
+
         if (userId != null) {
+          // Update Firestore with new image URL
           await FirebaseFirestore.instance
               .collection('users')
               .doc(userId)
               .update({'profileImageUrl': uploadedImageUrl});
 
-          // Refresh user data
           setState(() {
             _userData = _fetchUserData();
           });
 
+          // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Profile image updated successfully!')),
           );
         }
       } else {
+        // Handle case where upload fails
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to upload profile image.')),
         );
       }
     } catch (e) {
+      // Log the error and show a meaningful message
+      print("Error updating profile image: $e");
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('An error occurred while updating the image.')),
       );
-      print("Error updating profile image: $e");
+    } finally {
+      setState(() => _isUploading = false); // Hide loader
     }
   }
+
 
   Future<String?> _uploadImageToImgBB({
     Uint8List? webImage,
@@ -152,48 +165,56 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(color: Colors.white, fontSize: 20),
         ),
       ),
-      body: FutureBuilder<Map<String, dynamic>?>(
-        future: _userData,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
+      body: Stack(
+        children: [
+          FutureBuilder<Map<String, dynamic>?>(
+            future: _userData,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.white),
+                );
+              }
+
+              if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+                return const Center(
+                  child: Text(
+                    'Error fetching profile data',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                );
+              }
+
+              final userData = snapshot.data!;
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      buildProfileHeader(context, userData),
+                      const SizedBox(height: 20),
+                      buildSectionTitle('Account Information'),
+                      buildAccountInfoList(context, userData),
+                      const SizedBox(height: 20),
+                      buildSectionTitle('Settings'),
+                      buildSettingsList(),
+                      const SizedBox(height: 20),
+                      buildSectionTitle('Order History'),
+                      buildOrderHistory(),
+                      const SizedBox(height: 40),
+                      buildLogoutButton(context),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          if (_isUploading)
+            const Center(
               child: CircularProgressIndicator(color: Colors.white),
-            );
-          }
-
-          if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
-            return const Center(
-              child: Text(
-                'Error fetching profile data',
-                style: TextStyle(color: Colors.white),
-              ),
-            );
-          }
-
-          final userData = snapshot.data!;
-          return SingleChildScrollView(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  buildProfileHeader(context, userData),
-                  const SizedBox(height: 20),
-                  buildSectionTitle('Account Information'),
-                  buildAccountInfoList(context, userData),
-                  const SizedBox(height: 20),
-                  buildSectionTitle('Settings'),
-                  buildSettingsList(),
-                  const SizedBox(height: 20),
-                  buildSectionTitle('Order History'),
-                  buildOrderHistory(),
-                  const SizedBox(height: 40),
-                  buildLogoutButton(context),
-                ],
-              ),
             ),
-          );
-        },
+        ],
       ),
     );
   }
@@ -205,10 +226,6 @@ class _ProfilePageState extends State<ProfilePage> {
           GestureDetector(
             onTap: () async {
               await _updateProfileImage(context);
-              // Refresh only the user data without creating a new page instance
-              setState(() {
-                _userData = _fetchUserData();
-              });
             },
             child: CircleAvatar(
               radius: 70,
@@ -221,7 +238,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   : null,
             ),
           ),
-
           const SizedBox(height: 16),
           Text(
             userData['name'] ?? 'Name not available',
@@ -240,6 +256,44 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildLogoutButton(BuildContext context) {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+        ),
+        onPressed: _isLoggingOut
+            ? null
+            : () async {
+          setState(() => _isLoggingOut = true);
+          try {
+            await FirebaseAuth.instance.signOut();
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const LoginScreen()),
+                  (route) => false,
+            );
+          } catch (e) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Error during logout. Please try again.')),
+            );
+          } finally {
+            setState(() => _isLoggingOut = false);
+          }
+        },
+        child: _isLoggingOut
+            ? const CircularProgressIndicator(color: Colors.white)
+            : const Text(
+          "LOGOUT",
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
@@ -294,44 +348,6 @@ class _ProfilePageState extends State<ProfilePage> {
       ],
     );
   }
-
-  Widget buildLogoutButton(BuildContext context) {
-    return Center(
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.red,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-        onPressed: () async {
-          try {
-            await FirebaseAuth.instance.signOut();
-
-            // Use pushAndRemoveUntil to clear the navigation stack
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false, // Remove all routes
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Error during logout. Please try again.')),
-            );
-            print("Logout error: $e");
-          }
-        },
-
-        child: const Text(
-          "LOGOUT",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
-
 
   Widget buildListItem(IconData icon, String title, {VoidCallback? onTap}) {
     return GestureDetector(
