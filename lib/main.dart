@@ -30,7 +30,7 @@ class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: MainScreen(),
+      home: LoginScreen(),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,

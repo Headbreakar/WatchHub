@@ -3,6 +3,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutterofflie/Store/CartPage.dart';
 import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
+import 'package:flutterofflie/Store/wishlist.dart';
+
 
 class HomePage extends StatefulWidget {
   final VoidCallback onCartUpdate; // Callback to notify parent of cart changes
@@ -105,7 +107,14 @@ class _HomePageState extends State<HomePage> {
             children: [
               IconButton(
                 icon: Icon(Icons.favorite_border, color: Colors.white),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WishlistPage(), // Navigate to WishlistPage
+                    ),
+                  );
+                },
               ),
               SizedBox(width: 8),
               CircleAvatar(

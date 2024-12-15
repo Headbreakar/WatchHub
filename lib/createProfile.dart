@@ -88,10 +88,32 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
           .collection('users')
           .doc(userId)
           .collection('cart')
-          .doc('initialCart') // This could be a placeholder document to signify an empty cart
+          .doc('initialCart')
           .set({
         'items': [],
         'totalPrice': 0.0,
+      });
+
+      // Initialize an empty wishlist for the new user
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('wishlist')
+          .doc('initialWishlist')
+          .set({
+        'items': [],
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+
+      // Initialize an empty orders collection for the new user
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .collection('orders')
+          .doc('initialOrder') // Placeholder for future orders
+          .set({
+        'orders': [], // Empty orders list initially
+        'createdAt': FieldValue.serverTimestamp(),
       });
 
       // Navigate to the login screen after profile is created
@@ -106,6 +128,7 @@ class _CreateProfileScreenState extends State<CreateProfileScreen> {
       );
     }
   }
+
 
 
   @override
