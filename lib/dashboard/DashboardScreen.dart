@@ -78,7 +78,7 @@ class DashboardScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CategoriesScreen()),
+                  MaterialPageRoute(builder: (context) =>  CategoriesScreen()),
                 );
               },
             ),
@@ -98,7 +98,7 @@ class DashboardScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
+                  MaterialPageRoute(builder: (context) => UsersListScreen()),
                 );
               },
             ),
@@ -109,7 +109,7 @@ class DashboardScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) =>  FeedbackScreen()),
                 );
               },
             ),

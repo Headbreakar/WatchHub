@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutterofflie/Store/Product.dart';
 import 'package:flutterofflie/Store/category.dart';
+import 'package:flutterofflie/Store/profile.dart';
 import 'package:flutterofflie/Store/wishlist.dart';
 
 
@@ -116,9 +119,47 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
               const SizedBox(width: 8),
-              const CircleAvatar(
-                backgroundImage: AssetImage("Profile_Image.png"),
-                radius: 20,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const ProfilePage(), // Replace with your ProfileScreen widget
+                    ),
+                  );
+                },
+                child: FutureBuilder<DocumentSnapshot>(
+                  future: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(FirebaseAuth.instance.currentUser?.uid)
+                      .get(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 20,
+                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                      );
+                    }
+                    if (snapshot.hasError || !snapshot.hasData || snapshot.data?.data() == null) {
+                      return const CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        radius: 20,
+                        child: Icon(Icons.error, color: Colors.red),
+                      );
+                    }
+
+                    final data = snapshot.data!.data() as Map<String, dynamic>;
+                    final profileImageUrl = data['profileImageUrl'] ?? '';
+
+                    return CircleAvatar(
+                      backgroundImage: profileImageUrl.isNotEmpty
+                          ? NetworkImage(profileImageUrl)
+                          : const AssetImage("Profile_Image.png") as ImageProvider,
+                      radius: 20,
+                    );
+                  },
+                ),
               ),
             ],
           ),
@@ -126,6 +167,8 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+
 
   Widget buildSearchBar() {
     return TextField(

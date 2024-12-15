@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterofflie/LoginScreen.dart';
 import 'package:flutterofflie/SignUpScreen.dart';
 // Your CategoriesScreen
 import 'firebase_options.dart'; // Import the generated file
@@ -25,7 +26,7 @@ class WatchEaseApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: const SignUpScreen(),
+      home: const LoginScreen(),
       theme: ThemeData(
         fontFamily: 'Nunito',
         primarySwatch: Colors.blue,

@@ -13,7 +13,7 @@ class CategoriesScreen extends StatelessWidget {
   // Reference to the "categories" node in Realtime Database
   final DatabaseReference _categoriesRef = FirebaseDatabase.instance.ref().child('categories');
 
-  const CategoriesScreen({super.key});
+   CategoriesScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class CategoriesScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const CategoriesScreen()),
+                  MaterialPageRoute(builder: (context) =>  CategoriesScreen()),
                 );
               },
             ),
@@ -101,7 +101,7 @@ class CategoriesScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UsersListScreen()),
+                  MaterialPageRoute(builder: (context) =>  UsersListScreen()),
                 );
               },
             ),
@@ -112,7 +112,7 @@ class CategoriesScreen extends StatelessWidget {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const FeedbackScreen()),
+                  MaterialPageRoute(builder: (context) =>  FeedbackScreen()),
                 );
               },
             ),

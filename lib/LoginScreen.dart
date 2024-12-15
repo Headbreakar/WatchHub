@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../Store/mainscreen.dart';
+import 'SignUpScreen.dart';
 
 
 class LoginScreen extends StatefulWidget {
@@ -149,17 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
               children: [
                 const SizedBox(height: 20),
                 // Back arrow icon at the top
-                SafeArea(
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ),
-                ),
+
                 const SizedBox(height: 20),
                 // Logo positioned in the center below the back icon
                 Center(
@@ -299,6 +290,36 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpScreen()), // Replace with your SignUpScreen widget
+                  );
+                },
+                child: RichText(
+                  text: const TextSpan(
+                    text: "Don't have an account? ",
+                    style: TextStyle(color: Colors.grey, fontSize: 16),
+                    children: [
+                      TextSpan(
+                        text: "Sign Up",
+                        style: TextStyle(
+                          color: Colors.lightBlue,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+
         ],
       ),
     );
