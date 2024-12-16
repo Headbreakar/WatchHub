@@ -1,5 +1,6 @@
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutterofflie/Store/singleCategory.dart';
 
 class CategoryPage extends StatelessWidget {
   final DatabaseReference categoriesRef =
@@ -150,11 +151,15 @@ class CategoryPage extends StatelessWidget {
                           final category = categories[index];
                           return GestureDetector(
                             onTap: () {
-                              // Example: Add category to cart logic here
-                              print("Added to cart: ${category['title']}");
-
-                              // Notify the parent that the cart has been updated
-                              onCartUpdate();
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => SingleCategoryPage(
+                                    categoryId: category['id'], // Pass the dynamic ID
+                                    categoryTitle: category['title'], // Pass the dynamic title
+                                  ),
+                                ),
+                              );
                             },
                             child: Container(
                               margin: const EdgeInsets.only(bottom: 16),

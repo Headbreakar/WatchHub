@@ -1,11 +1,12 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SingleCategoryPage extends StatelessWidget {
   final String categoryId; // ID of the selected category
   final String categoryTitle;
 
-  const SingleCategoryPage({super.key, required this.categoryId, required this.categoryTitle});
+  const SingleCategoryPage(
+      {super.key, required this.categoryId, required this.categoryTitle});
 
   @override
   Widget build(BuildContext context) {
@@ -37,28 +38,29 @@ class SingleCategoryPage extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-      Row(
-      children: [
-      IconButton(
-      icon: const Icon(Icons.arrow_back, color: Colors.white),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    ),
-    Text(
-    categoryTitle.toUpperCase(),
-    style: const TextStyle(
-    color: Colors.white,
-    fontSize: 22,
-    fontWeight: FontWeight.bold,
-    ),
-    ),
-    ],
-    ),
-  ],),);
-
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+              Text(
+                categoryTitle.toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget buildFilters() {
@@ -80,18 +82,34 @@ class SingleCategoryPage extends StatelessWidget {
   }
 
   Widget buildProductGrid() {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('products')
-          .where('categoryId', isEqualTo: categoryId) // Make sure categoryId is passed correctly
-          .snapshots(),
+    final DatabaseReference productsRef =
+    FirebaseDatabase.instance.ref().child('products');
+
+    print("Fetching products for categoryId: $categoryId");
+
+    return FutureBuilder(
+      future: productsRef
+          .orderByChild('categoryId') // Query for categoryId
+          .equalTo(categoryId) // Exact match
+          .get(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
             child: CircularProgressIndicator(color: Color(0xFF7EA1C1)),
           );
         }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+
+        if (snapshot.hasError) {
+          return Center(
+            child: Text(
+              "Error: ${snapshot.error}",
+              style: const TextStyle(color: Colors.red),
+            ),
+          );
+        }
+
+        if (!snapshot.hasData || snapshot.data!.value == null) {
+          print("Fetched Data: No data found for categoryId: $categoryId");
           return const Center(
             child: Text(
               "No products available",
@@ -100,7 +118,20 @@ class SingleCategoryPage extends StatelessWidget {
           );
         }
 
-        final products = snapshot.data!.docs;
+        print("Fetched Data: ${snapshot.data!.value}"); // Debugging
+
+        Map<dynamic, dynamic> productsMap =
+        snapshot.data!.value as Map<dynamic, dynamic>;
+
+        List products = productsMap.entries.map((entry) {
+          return {
+            "name": entry.value['name'],
+            "price": entry.value['price'],
+            "imageUrl": entry.value['imageUrl'],
+            "shortDescription": entry.value['shortDescription'] ?? "",
+            "longDescription": entry.value['longDescription'] ?? "",
+          };
+        }).toList();
 
         return GridView.builder(
           padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -112,13 +143,12 @@ class SingleCategoryPage extends StatelessWidget {
             mainAxisSpacing: 16,
           ),
           itemBuilder: (context, index) {
-            final product = products[index].data() as Map<String, dynamic>;
+            final product = products[index];
             return buildProductCard(
               product['name'],
-              product['price'],
+              product['price'].toString(),
               product['imageUrl'],
-              product['shortDescription'] ?? "", // Default to empty string if no shortDescription
-              product['longDescription'] ?? "", // Include longDescription if needed
+              product['shortDescription'],
             );
           },
         );
@@ -127,74 +157,72 @@ class SingleCategoryPage extends StatelessWidget {
   }
 
 
-  Widget buildProductCard(String title, String price, String imageUrl, String shortDescription, String longDescription) {
+  Widget buildProductCard(String title, String price, String imageUrl,
+      String shortDescription) {
     return Container(
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1A1A),
-        borderRadius: BorderRadius.circular(16),
+        color: const Color(0xFF1A1A1A), // Dark background color
+        borderRadius: BorderRadius.circular(20), // Rounded corners
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            flex: 9,
-            child: Container(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
-                child: Image.network(
-                  imageUrl,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                ),
-              ),
+          // Product Image
+          ClipRRect(
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+            child: Image.network(
+              imageUrl,
+              height: 300,
+              width: double.infinity,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  height: 180,
+                  color: Colors.grey[800],
+                  child: const Center(
+                    child: Icon(Icons.image_not_supported, color: Colors.red),
+                  ),
+                );
+              },
             ),
           ),
-          Expanded(
-            flex: 1,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+          // Product Details
+          Padding(
+            padding: const EdgeInsets.symmetric(
+                horizontal: 12.0, vertical: 8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title, // Product Name
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "\$$price",
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  "$price USD", // Product Price
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    shortDescription,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  shortDescription, // Short Description
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 12,
                   ),
-                  // You can add longDescription or any other info if needed
-                  // Text(
-                  //   longDescription,
-                  //   style: TextStyle(color: Colors.white, fontSize: 10),
-                  //   maxLines: 2,
-                  //   overflow: TextOverflow.ellipsis,
-                  // ),
-                ],
-              ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         ],

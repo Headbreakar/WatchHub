@@ -6,7 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
-
+import 'updateField.dart';
 import '../LoginScreen.dart'; // For kIsWeb
 
 class ProfilePage extends StatefulWidget {
@@ -316,19 +316,36 @@ class _ProfilePageState extends State<ProfilePage> {
           Icons.phone,
           "Phone: ${userData['phone'] ?? 'N/A'}",
           onTap: () {
-            // Navigate to UpdateFieldScreen for Phone
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UpdateFieldScreen(
+                  field: 'Phone',
+                  value: userData['phone'] ?? '',
+                ),
+              ),
+            );
           },
         ),
         buildListItem(
           Icons.location_on,
           "Address: ${userData['address'] ?? 'N/A'}",
           onTap: () {
-            // Navigate to UpdateFieldScreen for Address
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => UpdateFieldScreen(
+                  field: 'Address',
+                  value: userData['address'] ?? '',
+                ),
+              ),
+            );
           },
         ),
       ],
     );
   }
+
 
   Widget buildSettingsList() {
     return Column(

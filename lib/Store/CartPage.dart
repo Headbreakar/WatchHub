@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutterofflie/Store/mainscreen.dart';
 
+import 'CheckoutPage.dart';
+
 class CartPage extends StatefulWidget {
   const CartPage({Key? key}) : super(key: key);
 
@@ -413,7 +415,12 @@ class _CartPageState extends State<CartPage> {
           minimumSize: const Size(double.infinity, 48),
         ),
         onPressed: () {
-          // Handle checkout logic
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CheckoutPage(cartItems: _cartItems),
+            ),
+          );
         },
         child: const Text(
           'CHECKOUT',
@@ -422,4 +429,5 @@ class _CartPageState extends State<CartPage> {
       ),
     );
   }
+
 }
