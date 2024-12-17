@@ -2,13 +2,72 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutterofflie/Store/singleCategory.dart';
 
-class CategoryPage extends StatelessWidget {
+import 'mainscreen.dart';
+
+class CategoryPage extends StatefulWidget {
+  final VoidCallback onCartUpdate;
+
+  const CategoryPage({super.key, required this.onCartUpdate});
+
+  @override
+  _CategoryPageState createState() => _CategoryPageState();
+}
+
+class _CategoryPageState extends State<CategoryPage> {
   final DatabaseReference categoriesRef =
   FirebaseDatabase.instance.ref().child('categories');
 
-  final VoidCallback onCartUpdate; // Callback to notify parent when cart is updated
+  List<Map<String, dynamic>> _categories = [];
+  List<Map<String, dynamic>> _filteredCategories = [];
+  final TextEditingController _searchController = TextEditingController();
 
-  CategoryPage({super.key, required this.onCartUpdate}); // Constructor to pass the callback
+  @override
+  void initState() {
+    super.initState();
+    _fetchCategories();
+    _searchController.addListener(_filterCategories);
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchCategories() async {
+    try {
+      final snapshot = await categoriesRef.get();
+
+      if (snapshot.exists) {
+        Map<dynamic, dynamic>? data = snapshot.value as Map<dynamic, dynamic>?;
+        if (data != null) {
+          setState(() {
+            _categories = data.entries
+                .map((entry) => {
+              "id": entry.key,
+              "title": entry.value['name'] ?? "Unknown",
+              "imageUrl": entry.value['imageUrl'] ??
+                  "https://via.placeholder.com/150", // Default image
+            })
+                .toList();
+            _filteredCategories = _categories;
+          });
+        }
+      }
+    } catch (e) {
+      print("Error fetching categories: $e");
+    }
+  }
+
+  void _filterCategories() {
+    final query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredCategories = _categories.where((category) {
+        final title = category['title'].toString().toLowerCase();
+        return title.contains(query);
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +96,8 @@ class CategoryPage extends StatelessWidget {
                     Row(
                       children: [
                         IconButton(
-                          icon: const Icon(Icons.favorite_border, color: Colors.white),
+                          icon: const Icon(Icons.favorite_border,
+                              color: Colors.white),
                           onPressed: () {},
                         ),
                         const CircleAvatar(
@@ -49,10 +109,12 @@ class CategoryPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+
               // Search Bar
               TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: "Search Product",
+                  hintText: "Search Category",
                   hintStyle: const TextStyle(color: Colors.grey),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
@@ -62,8 +124,10 @@ class CategoryPage extends StatelessWidget {
                     borderSide: BorderSide.none,
                   ),
                 ),
+                style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(height: 16),
+
               // Toggle Buttons
               SizedBox(
                 width: double.infinity,
@@ -73,7 +137,10 @@ class CategoryPage extends StatelessWidget {
                     Expanded(
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => MainScreen()),
+                          );
                         },
                         child: Container(
                           height: 50,
@@ -84,19 +151,16 @@ class CategoryPage extends StatelessWidget {
                           child: const Center(
                             child: Text(
                               "Trending",
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 20),
+                              style: TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 15), // Space between buttons
+                    const SizedBox(width: 15),
                     Expanded(
                       child: GestureDetector(
-                        onTap: () {
-                          // "Category" is already selected, so no action needed
-                        },
+                        onTap: () {},
                         child: Container(
                           height: 50,
                           decoration: const BoxDecoration(
@@ -106,8 +170,7 @@ class CategoryPage extends StatelessWidget {
                           child: const Center(
                             child: Text(
                               "Category",
-                              style:
-                              TextStyle(color: Colors.white, fontSize: 20),
+                              style: TextStyle(color: Colors.white, fontSize: 20),
                             ),
                           ),
                         ),
@@ -117,77 +180,53 @@ class CategoryPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
+
               // Categories List
               Expanded(
-                child: FutureBuilder(
-                  future: categoriesRef.get(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return const Center(
-                          child: Text("Error fetching categories.",
-                              style: TextStyle(color: Colors.white)));
-                    } else if (snapshot.hasData) {
-                      Map<dynamic, dynamic>? data =
-                      snapshot.data!.value as Map<dynamic, dynamic>?;
-                      if (data == null || data.isEmpty) {
-                        return const Center(
-                            child: Text("No categories found.",
-                                style: TextStyle(color: Colors.white)));
-                      }
-
-                      List categories = data.entries
-                          .map((entry) => {
-                        "id": entry.key, // Category ID
-                        "title": entry.value['name'] ?? "Unknown",
-                        "image": _getImage(entry.key), // Default image
-                      })
-                          .toList();
-
-                      return ListView.builder(
-                        itemCount: categories.length,
-                        itemBuilder: (context, index) {
-                          final category = categories[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => SingleCategoryPage(
-                                    categoryId: category['id'], // Pass the dynamic ID
-                                    categoryTitle: category['title'], // Pass the dynamic title
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Container(
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                image: DecorationImage(
-                                  image: AssetImage(category["image"]),
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                              height: 150,
-                              alignment: Alignment.center,
-                              child: Text(
-                                category["title"],
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                child: _filteredCategories.isEmpty
+                    ? const Center(
+                  child: Text(
+                    "No categories found.",
+                    style: TextStyle(color: Colors.white),
+                  ),
+                )
+                    : ListView.builder(
+                  itemCount: _filteredCategories.length,
+                  itemBuilder: (context, index) {
+                    final category = _filteredCategories[index];
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SingleCategoryPage(
+                              categoryId: category['id'],
+                              categoryTitle: category['title'],
                             ),
-                          );
-                        },
-                      );
-                    }
-                    return const Center(
-                        child: Text("Unexpected error occurred.",
-                            style: TextStyle(color: Colors.white)));
+                          ),
+                        );
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 16),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          image: DecorationImage(
+                            image: NetworkImage(category["imageUrl"]),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        height: 150,
+                        alignment: Alignment.center,
+                        child: Text(
+                          category["title"],
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    );
                   },
                 ),
               ),
@@ -196,16 +235,5 @@ class CategoryPage extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  String _getImage(String key) {
-    final defaultImages = [
-      "cat.png",
-      "catTwo.png",
-      "women_watches1.png",
-      "bgWatch.png"
-    ];
-    int index = int.tryParse(key) ?? 0;
-    return defaultImages[index % defaultImages.length];
   }
 }
