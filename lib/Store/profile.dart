@@ -7,6 +7,7 @@ import 'package:flutterofflie/Store/mainscreen.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
+import 'feedback.dart';
 import 'updateField.dart';
 import '../LoginScreen.dart'; // For kIsWeb
 
@@ -25,6 +26,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+
     _userData = _fetchUserData();
   }
 
@@ -357,10 +359,20 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         buildListItem(Icons.notifications, "Notifications"),
         buildListItem(Icons.security, "Privacy & Security"),
-        buildListItem(Icons.help, "Help Center"),
+        buildListItem(
+          Icons.help,
+          "Submit a Feedback",
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const FeedbackPage()),
+            );
+          },
+        ),
       ],
     );
   }
+
 
   Widget buildOrderHistory() {
     return Column(
