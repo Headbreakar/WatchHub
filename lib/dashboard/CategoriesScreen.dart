@@ -197,18 +197,21 @@ class CategoriesScreen extends StatelessWidget {
                                 // Edit Button
                                 IconButton(
                                   icon: const Icon(Icons.edit, color: Colors.blue),
-                                  onPressed: () {
-                                    // Navigate to EditCategoryScreen with dynamic data
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => EditCategoryScreen(
-                                          categoryId: category['id'], // Pass the unique ID of the category
-                                          initialCategoryName: category['name'], // Pass the current name of the category
+                                    onPressed: () {
+                                      final categoryName = category['name'] ?? ''; // Default to empty string
+                                      final imageUrl = category['imageUrl'] ?? ''; // Default to empty string
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => EditCategoryScreen(
+                                            categoryId: category['id'], // Ensure this exists
+                                            initialCategoryName: categoryName,
+                                            initialImageUrl: imageUrl,
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  },
+                                      );
+                                    }
                                 ),
                                 // Delete Button with Confirmation
                                 IconButton(
