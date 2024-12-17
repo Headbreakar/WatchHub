@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutterofflie/Store/mainscreen.dart';
+import 'package:flutterofflie/Store/policy.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/foundation.dart';
@@ -76,7 +77,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
           // Show success message
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Profile image updated successfully!')),
+            const SnackBar(
+                content: Text('Profile image updated successfully!')),
           );
         }
       } else {
@@ -89,13 +91,13 @@ class _ProfilePageState extends State<ProfilePage> {
       // Log the error and show a meaningful message
       print("Error updating profile image: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('An error occurred while updating the image.')),
+        const SnackBar(
+            content: Text('An error occurred while updating the image.')),
       );
     } finally {
       setState(() => _isUploading = false); // Hide loader
     }
   }
-
 
   Future<String?> _uploadImageToImgBB({
     Uint8List? webImage,
@@ -142,7 +144,10 @@ class _ProfilePageState extends State<ProfilePage> {
       final userId = FirebaseAuth.instance.currentUser?.uid;
       if (userId == null) return null;
 
-      final userDoc = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
       return userDoc.data();
     } catch (e) {
       print('Error fetching user data: $e');
@@ -183,7 +188,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 );
               }
 
-              if (snapshot.hasError || !snapshot.hasData || snapshot.data == null) {
+              if (snapshot.hasError ||
+                  !snapshot.hasData ||
+                  snapshot.data == null) {
                 return const Center(
                   child: Text(
                     'Error fetching profile data',
@@ -226,7 +233,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildProfileHeader(BuildContext context, Map<String, dynamic> userData) {
+  Widget buildProfileHeader(
+      BuildContext context, Map<String, dynamic> userData) {
     return Center(
       child: Column(
         children: [
@@ -279,28 +287,31 @@ class _ProfilePageState extends State<ProfilePage> {
         onPressed: _isLoggingOut
             ? null
             : () async {
-          setState(() => _isLoggingOut = true);
-          try {
-            await FirebaseAuth.instance.signOut();
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const LoginScreen()),
-                  (route) => false,
-            );
-          } catch (e) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Error during logout. Please try again.')),
-            );
-          } finally {
-            setState(() => _isLoggingOut = false);
-          }
-        },
+                setState(() => _isLoggingOut = true);
+                try {
+                  await FirebaseAuth.instance.signOut();
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const LoginScreen()),
+                    (route) => false,
+                  );
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content:
+                            Text('Error during logout. Please try again.')),
+                  );
+                } finally {
+                  setState(() => _isLoggingOut = false);
+                }
+              },
         child: _isLoggingOut
             ? const CircularProgressIndicator(color: Colors.white)
             : const Text(
-          "LOGOUT",
-          style: TextStyle(color: Colors.white),
-        ),
+                "LOGOUT",
+                style: TextStyle(color: Colors.white),
+              ),
       ),
     );
   }
@@ -316,7 +327,8 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget buildAccountInfoList(BuildContext context, Map<String, dynamic> userData) {
+  Widget buildAccountInfoList(
+      BuildContext context, Map<String, dynamic> userData) {
     return Column(
       children: [
         buildListItem(
@@ -329,6 +341,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 builder: (context) => UpdateFieldScreen(
                   field: 'Phone',
                   value: userData['phone'] ?? '',
+                  onFieldUpdated: () {
+                    setState(() {
+                      _userData = _fetchUserData(); // Refresh user data
+                    });
+                  },
                 ),
               ),
             );
@@ -344,6 +361,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 builder: (context) => UpdateFieldScreen(
                   field: 'Address',
                   value: userData['address'] ?? '',
+                  onFieldUpdated: () {
+                    setState(() {
+                      _userData = _fetchUserData(); // Refresh user data
+                    });
+                  },
                 ),
               ),
             );
@@ -353,12 +375,20 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
   Widget buildSettingsList() {
     return Column(
       children: [
-        buildListItem(Icons.notifications, "Notifications"),
-        buildListItem(Icons.security, "Privacy & Security"),
+        buildListItem(
+          Icons.security,
+          "Privacy & Policy",
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const PolicyPage()),
+            );
+          },
+
+        ),
         buildListItem(
           Icons.help,
           "Submit a Feedback",
@@ -373,12 +403,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-
   Widget buildOrderHistory() {
     return Column(
       children: [
         buildListItem(Icons.shopping_bag, "View All Orders"),
-        buildListItem(Icons.access_time, "Track Orders"),
       ],
     );
   }

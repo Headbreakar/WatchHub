@@ -5,8 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 class UpdateFieldScreen extends StatefulWidget {
   final String field; // Field to update (e.g., "Phone", "Address")
   final String value; // Current value of the field
+  final VoidCallback onFieldUpdated;
 
-  const UpdateFieldScreen({super.key, required this.field, required this.value});
+  const UpdateFieldScreen({super.key, required this.field, required this.value, required this.onFieldUpdated});
 
   @override
   _UpdateFieldScreenState createState() => _UpdateFieldScreenState();
@@ -35,9 +36,7 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
       return;
     }
 
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).update({
@@ -48,17 +47,20 @@ class _UpdateFieldScreenState extends State<UpdateFieldScreen> {
         SnackBar(content: Text('${widget.field} updated successfully')),
       );
 
-      Navigator.pop(context); // Go back to the Profile screen
+      // Call the callback to trigger a refresh in the parent widget
+      widget.onFieldUpdated();
+
+      // Navigate back to the Profile screen
+      Navigator.pop(context);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to update field. Please try again.')),
       );
     } finally {
-      setState(() {
-        _isLoading = false;
-      });
+      setState(() => _isLoading = false);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
