@@ -1,13 +1,29 @@
 import 'package:flutter/material.dart';
-
-import 'DashboardScreen.dart';
-import 'FeedbackScreen.dart';
-import 'OrdersScreen.dart';
-import 'ProductsScreen.dart';
-import 'UsersListScreen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../LoginScreen.dart';
 
 class LogoutScreen extends StatelessWidget {
   const LogoutScreen({super.key});
+
+  // Function to handle Google logout
+  Future<void> _logout(BuildContext context) async {
+    try {
+
+      // Sign out from Firebase Auth
+      await FirebaseAuth.instance.signOut();
+
+      // Navigate to the login screen and remove all previous routes
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    } catch (e) {
+      print("Logout Error: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error logging out: $e")),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -15,103 +31,15 @@ class LogoutScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
-            onPressed: () {
-              Scaffold.of(context).openDrawer(); // Open the drawer
-            },
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Navigator.pop(context),
         ),
         title: const Text(
           "Logout",
           style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        actions: const [
-          CircleAvatar(
-            backgroundImage: NetworkImage('https://i.pravatar.cc/300'),
-          ),
-          SizedBox(width: 16),
-        ],
-      ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const UserAccountsDrawerHeader(
-              accountName: Text("Anas Ashfaq"),
-              accountEmail: Text("anas.ashfaq@example.com"),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage("https://i.pravatar.cc/300"),
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blue,
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.dashboard),
-              title: const Text("Dashboard"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DashboardScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.production_quantity_limits),
-              title: const Text("Products"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const ProductsScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text("Orders"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const OrdersScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text("Users"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  UsersListScreen()),
-                );
-              },
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.feedback),
-              title: const Text("Feedbacks"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) =>  FeedbackScreen()),
-                );
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.logout),
-              title: const Text("Logout"),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LogoutScreen()),
-                );
-              },
-            ),
-          ],
-        ),
       ),
       body: Center(
         child: Padding(
@@ -129,30 +57,22 @@ class LogoutScreen extends StatelessWidget {
                 children: [
                   // Logout Button
                   ElevatedButton(
-                    onPressed: () {
-                      // Handle logout logic here
-                      print("User logged out");
-                      Navigator.pushReplacementNamed(context, '/login'); // Navigate to login screen or replace current screen
-                    },
+                    onPressed: () => _logout(context), // Trigger logout
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.red,
                       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: const Text("Logout",style: TextStyle(color: Colors.white),),
+                    child: const Text("Logout", style: TextStyle(color: Colors.white)),
                   ),
                   const SizedBox(width: 16),
                   // Cancel Button
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context); // Go back to the previous screen (cancel the logout)
-                    },
+                    onPressed: () => Navigator.pop(context),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue,
                       padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                      textStyle: const TextStyle(fontSize: 16),
                     ),
-                    child: const Text("Cancel",style: TextStyle(color: Colors.white),),
+                    child: const Text("Cancel", style: TextStyle(color: Colors.white)),
                   ),
                 ],
               ),

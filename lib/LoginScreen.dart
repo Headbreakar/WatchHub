@@ -1,9 +1,10 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../Store/mainscreen.dart';
 import 'SignUpScreen.dart';
-
+import 'dashboard/DashboardScreen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -51,6 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
+  // Login Function with Multi-Auth Logic
   void _login() async {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
@@ -65,16 +67,35 @@ class _LoginScreenState extends State<LoginScreen> {
     });
 
     try {
+      // Firebase Authentication
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
 
-      // Redirect to HomeScreen on success
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const MainScreen()),
-      );
+      // Fetch user document from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .get();
+
+      if (userDoc.exists) {
+        final isAdmin = userDoc.data()?['isAdmin'] ?? false;
+
+        // Redirect based on isAdmin value
+        if (isAdmin) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const DashboardScreen()),
+          );
+        } else {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const MainScreen()),
+          );
+        }
+      } else {
+        _showErrorDialog("User data not found.");
+      }
     } on FirebaseAuthException catch (e) {
-      print('FirebaseAuthException: ${e.code}, ${e.message}'); // Add this
       String errorMessage;
       switch (e.code) {
         case 'user-not-found':
@@ -91,7 +112,6 @@ class _LoginScreenState extends State<LoginScreen> {
       }
       _showErrorDialog(errorMessage);
     } catch (e) {
-      print('Unexpected error: $e'); // Add this
       _showErrorDialog('An unexpected error occurred. Please try again.');
     } finally {
       setState(() {
@@ -99,7 +119,6 @@ class _LoginScreenState extends State<LoginScreen> {
       });
     }
   }
-
 
   void _showErrorDialog(String message) {
     showDialog(
@@ -110,9 +129,7 @@ class _LoginScreenState extends State<LoginScreen> {
         actions: [
           TextButton(
             child: const Text('OK'),
-            onPressed: () {
-              Navigator.of(ctx).pop();
-            },
+            onPressed: () => Navigator.of(ctx).pop(),
           ),
         ],
       ),
@@ -133,7 +150,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Blur effect with semi-transparent overlay
           Positioned.fill(
             child: BackdropFilter(
               filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
@@ -142,17 +158,12 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
             ),
           ),
-          // Content on top of the blurred background
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 20),
-                // Back arrow icon at the top
-
-                const SizedBox(height: 20),
-                // Logo positioned in the center below the back icon
                 Center(
                   child: Column(
                     children: [
@@ -174,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Email TextField with hint hiding on focus
                 Center(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85,
@@ -186,10 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         fillColor: const Color(0xFF212121),
                         hintText: _showEmailHint ? 'steve_watson@yourdomain.com' : null,
                         hintStyle: const TextStyle(color: Colors.white),
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.only(left: 15, right: 10),
-                          child: Icon(Icons.email, color: Colors.white),
-                        ),
+                        prefixIcon: const Icon(Icons.email, color: Colors.white),
                         contentPadding: const EdgeInsets.symmetric(vertical: 25),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -201,7 +208,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Password TextField with hint hiding on focus
                 Center(
                   child: SizedBox(
                     width: MediaQuery.of(context).size.width * 0.85,
@@ -214,23 +220,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         fillColor: const Color(0xFF212121),
                         hintText: _showPasswordHint ? '********' : null,
                         hintStyle: const TextStyle(color: Colors.white),
-                        prefixIcon: const Padding(
-                          padding: EdgeInsets.only(left: 15, right: 10),
-                          child: Icon(Icons.lock, color: Colors.white),
-                        ),
-                        suffixIcon: Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: IconButton(
-                            icon: Icon(
-                              _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _isPasswordVisible = !_isPasswordVisible;
-                              });
-                            },
+                        prefixIcon: const Icon(Icons.lock, color: Colors.white),
+                        suffixIcon: IconButton(
+                          icon: Icon(
+                            _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                            color: Colors.white,
                           ),
+                          onPressed: () {
+                            setState(() {
+                              _isPasswordVisible = !_isPasswordVisible;
+                            });
+                          },
                         ),
                         contentPadding: const EdgeInsets.symmetric(vertical: 25),
                         border: OutlineInputBorder(
@@ -243,29 +243,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                // Remember me checkbox
-                Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Checkbox(
-                        value: _rememberMe,
-                        activeColor: Colors.lightBlueAccent,
-                        onChanged: (value) {
-                          setState(() {
-                            _rememberMe = value!;
-                          });
-                        },
-                      ),
-                      const Text(
-                        'Remember me',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ],
-                  ),
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Checkbox(
+                      value: _rememberMe,
+                      activeColor: Colors.lightBlueAccent,
+                      onChanged: (value) {
+                        setState(() {
+                          _rememberMe = value!;
+                        });
+                      },
+                    ),
+                    const Text('Remember me', style: TextStyle(color: Colors.white)),
+                  ],
                 ),
                 const SizedBox(height: 20),
-                // Log In button
                 Center(
                   child: SizedBox(
                     width: 420,
@@ -290,36 +283,6 @@ class _LoginScreenState extends State<LoginScreen> {
               ],
             ),
           ),
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 20.0),
-              child: GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const SignUpScreen()), // Replace with your SignUpScreen widget
-                  );
-                },
-                child: RichText(
-                  text: const TextSpan(
-                    text: "Don't have an account? ",
-                    style: TextStyle(color: Colors.grey, fontSize: 16),
-                    children: [
-                      TextSpan(
-                        text: "Sign Up",
-                        style: TextStyle(
-                          color: Colors.lightBlue,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-
         ],
       ),
     );
