@@ -196,40 +196,50 @@ class _UsersListScreenState extends State<UsersListScreen> {
             leading: const Icon(Icons.dashboard),
             title: const Text("Dashboard"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => DashboardScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => DashboardScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.production_quantity_limits),
             title: const Text("Products"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const ProductsScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ProductsScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.category),
             title: const Text("Categories"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => CategoriesScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  CategoriesScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.history),
             title: const Text("Orders"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const OrdersScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const OrdersScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.person),
             title: const Text("Users"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const UsersListScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  UsersListScreen()),
+              );
             },
           ),
           const Divider(),
@@ -237,16 +247,20 @@ class _UsersListScreenState extends State<UsersListScreen> {
             leading: const Icon(Icons.feedback),
             title: const Text("Feedbacks"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => FeedbackScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  FeedbackScreen()),
+              );
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: const Text("Logout"),
             onTap: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LogoutScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const LogoutScreen()),
+              );
             },
           ),
         ],

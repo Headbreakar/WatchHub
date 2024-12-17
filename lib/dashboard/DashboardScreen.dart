@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import 'CategoriesScreen.dart';
 import 'FeedbackScreen.dart';
 import 'LogoutScreen.dart';
 import 'OrdersScreen.dart';
@@ -178,7 +179,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const DashboardScreen()),
+                MaterialPageRoute(builder: (context) => DashboardScreen()),
               );
             },
           ),
@@ -189,6 +190,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProductsScreen()),
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.category),
+            title: const Text("Categories"),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) =>  CategoriesScreen()),
               );
             },
           ),
@@ -208,7 +219,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const UsersListScreen()),
+                MaterialPageRoute(builder: (context) =>  UsersListScreen()),
               );
             },
           ),
@@ -219,7 +230,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => FeedbackScreen()),
+                MaterialPageRoute(builder: (context) =>  FeedbackScreen()),
               );
             },
           ),

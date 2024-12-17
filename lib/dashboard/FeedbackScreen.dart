@@ -1,54 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:flutterofflie/dashboard/DashboardScreen.dart';
-import 'package:flutterofflie/dashboard/OrdersScreen.dart';
-import 'package:flutterofflie/dashboard/ProductsScreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 import 'CategoriesScreen.dart';
+import 'DashboardScreen.dart';
 import 'LogoutScreen.dart';
+import 'OrdersScreen.dart';
+import 'ProductsScreen.dart';
 import 'UsersListScreen.dart';
 
-class FeedbackScreen extends StatelessWidget {
-  // Example list of feedbacks
-  final List<Map<String, String>> feedbackList = [
-    {
-      'userId': '123',
-      'username': 'John Doe',
-      'productName': 'Product A',
-      'feedback': 'Great product, loved it!',
-    },
-    {
-      'userId': '456',
-      'username': 'Jane Smith',
-      'productName': 'Product B',
-      'feedback': 'Good quality, but the delivery was delayed.',
-    },
-    {
-      'userId': '789',
-      'username': 'Mark Wilson',
-      'productName': 'Product C',
-      'feedback': 'Not satisfied with the product.',
-    },
-  ];
+class FeedbackScreen extends StatefulWidget {
+  const FeedbackScreen({Key? key}) : super(key: key);
 
-  FeedbackScreen({super.key});
+  @override
+  State<FeedbackScreen> createState() => _FeedbackScreenState();
+}
+
+class _FeedbackScreenState extends State<FeedbackScreen> {
+  final DatabaseReference _feedbackRef =
+  FirebaseDatabase.instance.ref().child('feedbacks');
+
+  // Global key to control Scaffold
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey, // Assign the GlobalKey to Scaffold
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: Builder(
-          builder: (context) => IconButton(
-            icon: const Icon(Icons.menu, color: Colors.black),
-            onPressed: () {
-              Scaffold.of(context).openDrawer(); // Open the drawer
-            },
-          ),
+        leading: IconButton(
+          icon: const Icon(Icons.menu, color: Colors.black),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer(); // Open the drawer
+          },
         ),
         title: const Text(
           "Feedback",
-          style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         actions: const [
@@ -146,51 +137,70 @@ class FeedbackScreen extends StatelessWidget {
           ],
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: feedbackList.length,
-        itemBuilder: (context, index) {
-          final feedback = feedbackList[index];
-          return Card(
-            elevation: 2,
-            margin: const EdgeInsets.symmetric(vertical: 8),
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "User ID: ${feedback['userId']}",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text("Username: ${feedback['username']}"),
-                  const SizedBox(height: 4),
-                  Text("Product: ${feedback['productName']}"),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Feedback:",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(feedback['feedback'] ?? ""),
-                  const SizedBox(height: 16),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: ElevatedButton(
-                      onPressed: () {
-                        // Handle delete action here
-                        print("Delete feedback from ${feedback['username']}");
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+      body: StreamBuilder<DatabaseEvent>(
+        stream: _feedbackRef.onValue,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasError) {
+            return const Center(child: Text("Error fetching feedbacks"));
+          }
+
+          if (!snapshot.hasData || snapshot.data?.snapshot.value == null) {
+            return const Center(child: Text("No feedback available"));
+          }
+
+          final Map<dynamic, dynamic> feedbackMap =
+          snapshot.data!.snapshot.value as Map<dynamic, dynamic>;
+
+          final feedbackList = feedbackMap.values.toList();
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16),
+            itemCount: feedbackList.length,
+            itemBuilder: (context, index) {
+              final feedback = feedbackList[index];
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "User ID: ${feedback['userId']}",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      child: const Text("Delete",style: TextStyle(color: Colors.white),),
-                    ),
+                      const SizedBox(height: 4),
+                      Text("Feedback: ${feedback['feedback']}"),
+                      const SizedBox(height: 8),
+                      Text("Rating: ${feedback['rating']}"),
+                      const SizedBox(height: 8),
+                      Text("Type: ${feedback['type']}"),
+                      const SizedBox(height: 8),
+                      Text("Timestamp: ${feedback['timestamp']}"),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            print("Delete feedback from ${feedback['userId']}");
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                          ),
+                          child: const Text("Delete",
+                              style: TextStyle(color: Colors.white)),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           );
         },
       ),
