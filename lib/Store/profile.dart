@@ -3,6 +3,7 @@ import 'dart:convert'; // For JSON decoding
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutterofflie/Store/fetchOrders.dart';
 import 'package:flutterofflie/Store/mainscreen.dart';
 import 'package:flutterofflie/Store/policy.dart';
 import 'package:image_picker/image_picker.dart';
@@ -406,7 +407,12 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget buildOrderHistory() {
     return Column(
       children: [
-        buildListItem(Icons.shopping_bag, "View All Orders"),
+        buildListItem(Icons.shopping_bag, "View All Orders", onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const MyOrdersPage()),
+          );
+        },),
       ],
     );
   }
